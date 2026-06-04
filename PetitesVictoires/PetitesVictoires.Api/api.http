@@ -1,0 +1,7 @@
+@host=https://localhost
+@port=7280
+
+### GET request to example server
+GET {{host}}:{{port}}/
+
+###

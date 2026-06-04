@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="PetitesVictoires.Api/PetitesVictoires.Api.csproj" />
+    <Project Path="PetitesVictoires.Core/PetitesVictoires.Core.csproj" />
+    <Project Path="PetitesVictoires.Infrastructure/PetitesVictoires.Infrastructure.csproj" />
+    <Project Path="PetitesVictoires.UseCases/PetitesVictoires.UseCases.csproj" />
+  </Folder>
+  <Folder Name="/src/_aspire/">
+    <Project Path="PetitesVictoires.AspireHost/PetitesVictoires.AspireHost.csproj" />
+    <Project Path="PetitesVictoires.ServiceDefaults/PetitesVictoires.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
