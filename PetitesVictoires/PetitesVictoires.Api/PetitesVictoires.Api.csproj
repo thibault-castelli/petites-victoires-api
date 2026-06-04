@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Npgsql" Version="13.4.2" />
-        <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.2" />
-        <PackageReference Include="FastEndpoints" Version="8.1.0" />
-        <PackageReference Include="FastEndpoints.Swagger" Version="8.1.0" />
+        <PackageReference Include="Aspire.Npgsql" Version="13.4.2"/>
+        <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.2"/>
+        <PackageReference Include="FastEndpoints" Version="8.1.0"/>
+        <PackageReference Include="FastEndpoints.Swagger" Version="8.1.0"/>
         <PackageReference Include="Mediator.SourceGenerator" Version="3.0.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,8 +18,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PetitesVictoires.ServiceDefaults\PetitesVictoires.ServiceDefaults.csproj" />
-        <ProjectReference Include="..\PetitesVictoires.UseCases\PetitesVictoires.UseCases.csproj" />
+        <ProjectReference Include="..\PetitesVictoires.Infrastructure\PetitesVictoires.Infrastructure.csproj"/>
+        <ProjectReference Include="..\PetitesVictoires.ServiceDefaults\PetitesVictoires.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\PetitesVictoires.UseCases\PetitesVictoires.UseCases.csproj"/>
     </ItemGroup>
 
 </Project>

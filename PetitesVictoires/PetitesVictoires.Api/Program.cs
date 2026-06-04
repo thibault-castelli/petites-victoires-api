@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using PetitesVictoires.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,7 @@ builder.AddServiceDefaults(); // OpenTelemetry logging
 
 builder.AddRedisDistributedCache("cache");
 
-builder.AddNpgsqlDataSource("postgres");
+builder.AddPetitesVictoiresDbContext();
 
 builder.Services.AddFastEndpoints()
     .SwaggerDocument(o =>
