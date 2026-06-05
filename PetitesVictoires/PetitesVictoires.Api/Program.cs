@@ -29,5 +29,6 @@ app.MapDefaultEndpoints(); // Aspire health checks and metrics
 app.UseFastEndpoints();
 
 await app.MigrateDatabaseAsync();
+await app.SeedAsync();
 
 app.Run();

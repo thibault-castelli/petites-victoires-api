@@ -1,16 +1,16 @@
-using Microsoft.EntityFrameworkCore;
 using PetitesVictoires.Infrastructure.Data;
+using PetitesVictoires.Infrastructure.Data.Seeds;
 
 namespace PetitesVictoires.Api.Configurations;
 
-public static class DatabaseConfiguration
+public static class SeedConfiguration
 {
     extension(WebApplication app)
     {
-        public async Task MigrateDatabaseAsync()
+        public async Task SeedAsync()
         {
-            var shouldMigrate = app.Environment.IsDevelopment();
-            if (!shouldMigrate) return;
+            var shouldSeed = app.Environment.IsDevelopment();
+            if (!shouldSeed) return;
 
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
@@ -18,14 +18,13 @@ public static class DatabaseConfiguration
 
             try
             {
-                logger.LogInformation("Migrating database...");
+                logger.LogInformation("Seeding database...");
                 var context = services.GetRequiredService<PetitesVictoiresDbContext>();
-                await context.Database.MigrateAsync();
+                await DatabaseSeeder.SeedAsync(context);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred while migrating the database. {Message}", ex.Message);
-                throw; // Re-throw to make startup fail if migrations fail
+                logger.LogError(ex, "An error occurred seeding the database. {Message}", ex.Message);
             }
         }
     }
