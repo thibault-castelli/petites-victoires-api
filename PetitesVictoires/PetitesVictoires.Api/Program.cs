@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using PetitesVictoires.Api.Configurations;
 using PetitesVictoires.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,5 +27,7 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints(); // Aspire health checks and metrics
 app.UseFastEndpoints();
+
+await app.MigrateDatabaseAsync();
 
 app.Run();
