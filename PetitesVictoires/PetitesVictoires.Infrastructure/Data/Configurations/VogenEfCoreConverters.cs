@@ -1,7 +1,7 @@
 using PetitesVictoires.Core.PostAggregate;
 using Vogen;
 
-namespace PetitesVictoires.Infrastructure.Configurations;
+namespace PetitesVictoires.Infrastructure.Data.Configurations;
 
 [EfCoreConverter<PostId>]
 [EfCoreConverter<PostContent>]

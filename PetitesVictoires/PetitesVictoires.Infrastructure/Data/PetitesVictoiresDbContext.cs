@@ -2,7 +2,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using PetitesVictoires.Core.PostAggregate;
 
-namespace PetitesVictoires.Infrastructure;
+namespace PetitesVictoires.Infrastructure.Data;
 
 public class PetitesVictoiresDbContext(DbContextOptions<PetitesVictoiresDbContext> options) : DbContext(options)
 {

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PetitesVictoires.Core.PostAggregate;
 
-namespace PetitesVictoires.Infrastructure.Configurations;
+namespace PetitesVictoires.Infrastructure.Data.Configurations;
 
 public class PostConfiguration : IEntityTypeConfiguration<Post>
 {

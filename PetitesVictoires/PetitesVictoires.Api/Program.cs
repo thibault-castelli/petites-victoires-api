@@ -1,6 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using PetitesVictoires.Infrastructure;
+using PetitesVictoires.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

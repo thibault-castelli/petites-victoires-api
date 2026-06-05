@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
 
-namespace PetitesVictoires.Infrastructure;
+namespace PetitesVictoires.Infrastructure.Data;
 
 public static class PetitesVictoiresDbContextExtensions
 {
