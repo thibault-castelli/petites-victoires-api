@@ -1,5 +1,5 @@
+using Ardalis.SharedKernel;
 using PetitesVictoires.Core.Common;
-using PetitesVictoires.Core.Interfaces;
 
 namespace PetitesVictoires.Core.PostAggregate;
 

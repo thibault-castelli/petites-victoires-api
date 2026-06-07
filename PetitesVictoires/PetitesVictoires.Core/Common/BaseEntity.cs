@@ -1,6 +1,8 @@
+using Ardalis.SharedKernel;
+
 namespace PetitesVictoires.Core.Common;
 
-public abstract class BaseEntity<TId>
+public abstract class BaseEntity<TId> : HasDomainEventsBase
 {
     public TId Id { get; set; } = default!;
     public DateTime CreatedAt { get; init; }

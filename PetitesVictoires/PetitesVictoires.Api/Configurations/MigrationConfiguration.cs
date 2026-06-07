@@ -3,7 +3,7 @@ using PetitesVictoires.Infrastructure.Data;
 
 namespace PetitesVictoires.Api.Configurations;
 
-public static class DatabaseConfiguration
+public static class MigrationConfiguration
 {
     extension(WebApplication app)
     {

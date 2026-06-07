@@ -1,7 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using PetitesVictoires.Api.Configurations;
-using PetitesVictoires.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +8,12 @@ builder.AddServiceDefaults(); // OpenTelemetry logging
 
 builder.AddRedisDistributedCache("cache");
 
-builder.AddPetitesVictoiresDbContext();
+using var loggerFactory = LoggerFactory.Create(config => config.AddConsole());
+var startupLogger = loggerFactory.CreateLogger<Program>();
+
+startupLogger.LogInformation("Starting web host");
+
+builder.Services.AddServiceConfigurations(startupLogger, builder);
 
 builder.Services.AddFastEndpoints()
     .SwaggerDocument(o =>
