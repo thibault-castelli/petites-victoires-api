@@ -4,7 +4,8 @@ using PetitesVictoires.Api.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults(); // OpenTelemetry logging
+builder.AddServiceDefaults() // OpenTelemetry logging
+    .AddLoggerConfigurations(); // This adds Serilog for console formatting
 
 builder.AddRedisDistributedCache("cache");
 
