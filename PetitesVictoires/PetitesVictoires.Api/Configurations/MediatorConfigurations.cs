@@ -5,7 +5,7 @@ using PetitesVictoires.UseCases.Posts.Get;
 
 namespace PetitesVictoires.Api.Configurations;
 
-public static class MediatorConfiguration
+public static class MediatorConfigurations
 {
     extension(IServiceCollection services)
     {
@@ -23,7 +23,7 @@ public static class MediatorConfiguration
                     typeof(Post), // Core
                     typeof(GetPostQuery), // UseCases
                     typeof(InfrastructureServiceExtensions), // Infrastructure
-                    typeof(MediatorConfiguration) // Web
+                    typeof(MediatorConfigurations) // Web
                 ];
 
                 // Register pipeline behaviors here (order matters)
