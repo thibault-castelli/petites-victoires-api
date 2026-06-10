@@ -8,9 +8,8 @@ public static class ServiceConfigurations
     {
         public IServiceCollection AddServiceConfigurations(ILogger logger, WebApplicationBuilder builder)
         {
-            services.AddInfrastructureServices(builder.Configuration, logger);
-
-            logger.LogInformation("{Project} services registered", "Infrastructure");
+            services.AddInfrastructureServices(builder.Configuration, logger)
+                .AddMediatorSourceGen(logger);
 
             return services;
         }
