@@ -5,3 +5,11 @@
 GET {{host}}:{{port}}/
 
 ###
+POST {{host}}:{{port}}/users
+Content-Type: application/json
+
+{
+  "EmailAddress": "example@mail.com",
+  "Name": "example",
+  "Password": "Password1!"
+}
