@@ -3,7 +3,8 @@ using Vogen;
 
 namespace PetitesVictoires.Core.Common;
 
-public readonly struct Email
+[ValueObject<string>]
+public readonly partial struct Email
 {
     public const int MaxLength = 254; // RFC 5321 max length for an email address
 

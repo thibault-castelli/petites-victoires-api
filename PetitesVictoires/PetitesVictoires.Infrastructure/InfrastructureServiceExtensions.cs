@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PetitesVictoires.Core.Interfaces;
 using PetitesVictoires.Infrastructure.Data;
 using PetitesVictoires.Infrastructure.Identity;
 
@@ -31,7 +32,8 @@ public static class InfrastructureServiceExtensions
             services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<PetitesVictoiresDbContext>();
 
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
-                .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
+                .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>))
+                .AddScoped<IIdentityService, IdentityService>();
 
             logger.LogInformation("{Project} services registered", "Infrastructure");
 
