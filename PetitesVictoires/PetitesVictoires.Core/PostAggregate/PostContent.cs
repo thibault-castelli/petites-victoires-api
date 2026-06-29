@@ -7,6 +7,11 @@ public readonly partial struct PostContent
 {
     public const int MaxLength = 5000;
 
+    private static string NormalizeInput(string input)
+    {
+        return input.Trim();
+    }
+
     private static Validation Validate(in string content)
     {
         if (string.IsNullOrEmpty(content)) return Validation.Invalid("Content cannot be empty");
