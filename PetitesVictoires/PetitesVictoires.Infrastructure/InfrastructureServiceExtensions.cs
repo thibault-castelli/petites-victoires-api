@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PetitesVictoires.Infrastructure.Data;
+using PetitesVictoires.Infrastructure.Identity;
 
 namespace PetitesVictoires.Infrastructure;
 
@@ -26,6 +27,8 @@ public static class InfrastructureServiceExtensions
                 options.UseNpgsql(connectionString);
                 options.AddInterceptors(eventDispatchInterceptor);
             });
+
+            services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<PetitesVictoiresDbContext>();
 
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
                 .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
