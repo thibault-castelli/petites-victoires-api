@@ -9,6 +9,7 @@ public static class ServiceConfigurations
         public IServiceCollection AddServiceConfigurations(ILogger logger, WebApplicationBuilder builder)
         {
             services.AddInfrastructureServices(builder.Configuration, logger)
+                .AddIdentityConfigurations(logger)
                 .AddMediatorSourceGen(logger);
 
             return services;

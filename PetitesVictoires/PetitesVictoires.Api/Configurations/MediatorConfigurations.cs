@@ -12,6 +12,7 @@ public static class MediatorConfigurations
         public IServiceCollection AddMediatorSourceGen(ILogger logger)
         {
             logger.LogInformation("Registering Mediator SourceGen and Behaviors");
+
             services.AddMediator(options =>
             {
                 // Lifetime: Singleton is fastest per docs; Scoped/Transient also supported.
