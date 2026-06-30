@@ -13,3 +13,12 @@ Content-Type: application/json
   "Name": "example",
   "Password": "Password1!"
 }
+
+###
+POST {{host}}:{{port}}/users/sign-in
+Content-Type: application/json
+
+{
+  "EmailAddress": "example@mail.com",
+  "Password": "Password1"
+}

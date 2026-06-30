@@ -4,7 +4,7 @@ public class GetPostByIdRequest
 {
     public const string Route = "/Posts/{PostId:int}";
 
-    public int PostId { get; set; }
+    public int PostId { get; init; }
 
     public static string BuildRoute(int postId)
     {

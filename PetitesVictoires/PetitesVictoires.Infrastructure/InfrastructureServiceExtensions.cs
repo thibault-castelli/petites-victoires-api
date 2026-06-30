@@ -1,5 +1,6 @@
 using Ardalis.GuardClauses;
 using Ardalis.SharedKernel;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,10 @@ public static class InfrastructureServiceExtensions
                 options.AddInterceptors(eventDispatchInterceptor);
             });
 
-            services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<PetitesVictoiresDbContext>();
+            services
+                .AddIdentityCore<ApplicationUser>()
+                .AddEntityFrameworkStores<PetitesVictoiresDbContext>()
+                .AddSignInManager();
 
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
                 .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>))

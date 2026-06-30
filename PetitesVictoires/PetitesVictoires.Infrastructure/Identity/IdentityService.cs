@@ -6,7 +6,9 @@ using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.Infrastructure.Identity;
 
-internal sealed class IdentityService(UserManager<ApplicationUser> userManager) : IIdentityService
+internal sealed class IdentityService(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager) : IIdentityService
 {
     public async Task<Result<UserId>> CreateUserAsync(Email email, UserName name, string password,
         CancellationToken cancellationToken)
@@ -17,5 +19,17 @@ internal sealed class IdentityService(UserManager<ApplicationUser> userManager) 
         return result.Succeeded
             ? Result.Success(UserId.From(user.Id))
             : Result.Invalid(result.Errors.Select(e => new ValidationError(e.Description)).ToList());
+    }
+
+    public async Task<Result<AuthenticatedUser>> ValidateCredentialsAsync(Email email, string password,
+        CancellationToken cancellationToken)
+    {
+        var user = await userManager.FindByEmailAsync(email.Value);
+        if (user is null) return Result.Unauthorized();
+
+        var result = await signInManager.CheckPasswordSignInAsync(user, password, true);
+
+        if (result.Succeeded) return new AuthenticatedUser(user.Id, user.UserName!, user.Email!);
+        return result.IsLockedOut ? Result.Error("Account locked. Try again later") : Result.Unauthorized();
     }
 }

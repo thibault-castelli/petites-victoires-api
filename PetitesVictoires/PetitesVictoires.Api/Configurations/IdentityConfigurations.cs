@@ -11,8 +11,25 @@ public static class IdentityConfigurations
         {
             logger.LogInformation("Adding Identity Configurations");
 
-            services.AddAuthenticationCookie(TimeSpan.FromMinutes(60));
+            services.AddAuthenticationCookie(
+                TimeSpan.FromMinutes(60),
+                options => // optional configuration overload
+                {
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.SlidingExpiration = true;
+                    options.Events.OnRedirectToLogin = ctx =>
+                    {
+                        ctx.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    };
+                    options.Events.OnRedirectToAccessDenied = ctx =>
+                    {
+                        ctx.Response.StatusCode = 403;
+                        return Task.CompletedTask;
+                    };
+                });
             services.AddAuthorization();
+            services.AddAntiforgery();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -30,13 +47,6 @@ public static class IdentityConfigurations
                 options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = true;
-            });
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                options.SlidingExpiration = true;
             });
 
             return services;

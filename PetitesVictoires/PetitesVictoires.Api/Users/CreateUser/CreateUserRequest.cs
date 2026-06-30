@@ -4,7 +4,7 @@ public class CreateUserRequest
 {
     public const string Route = "/Users";
 
-    public string EmailAddress { get; set; }
-    public string Name { get; set; }
-    public string Password { get; set; }
+    public required string EmailAddress { get; init; }
+    public required string Name { get; init; }
+    public required string Password { get; init; }
 }
