@@ -4,7 +4,7 @@
 ### GET request to example server
 GET {{host}}:{{port}}/
 
-###
+### Create user
 POST {{host}}:{{port}}/users
 Content-Type: application/json
 
@@ -14,11 +14,14 @@ Content-Type: application/json
   "Password": "Password1!"
 }
 
-###
+### Sign in
 POST {{host}}:{{port}}/users/sign-in
 Content-Type: application/json
 
 {
   "EmailAddress": "example@mail.com",
-  "Password": "Password1"
+  "Password": "Password1!"
 }
+
+### Sign out
+GET {{host}}:{{port}}/users/sign-out
