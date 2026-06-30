@@ -1,6 +1,6 @@
 namespace PetitesVictoires.Api.Posts.GetPostById;
 
-public class GetPostByIdRequest
+public record GetPostByIdRequest
 {
     public const string Route = "/Posts/{PostId:int}";
 

@@ -9,7 +9,7 @@ using PetitesVictoires.UseCases.Users.Create;
 namespace PetitesVictoires.Api.Users.CreateUser;
 
 public class CreateUserEndpoint(IMediator mediator)
-    : Endpoint<CreateUserRequest, Results<Created<CreateUserResponse>, ValidationProblem, ProblemHttpResult>>
+    : Endpoint<CreateUserRequest, Results<Created<UserRecord>, ValidationProblem, ProblemHttpResult>>
 {
     public override void Configure()
     {
@@ -21,7 +21,7 @@ public class CreateUserEndpoint(IMediator mediator)
             s.Description = "Creates a new user with the provided email address, name and password.";
             s.ExampleRequest = new CreateUserRequest
                 { EmailAddress = "example@mail.com", Name = "example", Password = "password" };
-            s.ResponseExamples[201] = new CreateUserResponse(1, "example@mail.com", "example");
+            s.ResponseExamples[201] = new UserRecord(1, "example@mail.com", "example", DateTime.UtcNow);
 
             s.Responses[201] = "User created successfully";
             s.Responses[400] = "Invalid input data (validation errors";
@@ -30,18 +30,18 @@ public class CreateUserEndpoint(IMediator mediator)
         Tags("Users");
         Description(builder => builder
             .Accepts<CreateUserRequest>("application/json")
-            .Produces<CreateUserResponse>(201, "application/json")
+            .Produces<UserRecord>(201, "application/json")
             .ProducesProblem(400)
             .ProducesProblem(500));
     }
 
-    public override async Task<Results<Created<CreateUserResponse>, ValidationProblem, ProblemHttpResult>>
+    public override async Task<Results<Created<UserRecord>, ValidationProblem, ProblemHttpResult>>
         ExecuteAsync(CreateUserRequest request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new CreateUserCommand(Email.From(request.EmailAddress),
             UserName.From(request.Name), request.Password), cancellationToken);
 
         return result.ToCreatedResult(id => $"/Users/{id}",
-            id => new CreateUserResponse(id.Value, request.EmailAddress, request.Name));
+            id => new UserRecord(id.Value, request.EmailAddress, request.Name, DateTime.UtcNow));
     }
 }

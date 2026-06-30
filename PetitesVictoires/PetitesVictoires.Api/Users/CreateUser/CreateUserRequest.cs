@@ -1,6 +1,6 @@
 namespace PetitesVictoires.Api.Users.CreateUser;
 
-public class CreateUserRequest
+public record CreateUserRequest
 {
     public const string Route = "/Users";
 

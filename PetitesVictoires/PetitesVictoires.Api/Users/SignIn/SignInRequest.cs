@@ -1,6 +1,6 @@
 namespace PetitesVictoires.Api.Users.SignIn;
 
-public class SignInRequest
+public record SignInRequest
 {
     public const string Route = "Users/Sign-In";
 
