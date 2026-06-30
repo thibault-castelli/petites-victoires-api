@@ -6,5 +6,6 @@ namespace PetitesVictoires.Core.Interfaces;
 
 public interface IIdentityService
 {
-    Task<Result<UserId>> CreateUserAsync(Email email, string password, CancellationToken cancellationToken);
+    Task<Result<UserId>> CreateUserAsync(Email email, UserName name, string password,
+        CancellationToken cancellationToken);
 }

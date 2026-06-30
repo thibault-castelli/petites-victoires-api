@@ -8,9 +8,10 @@ namespace PetitesVictoires.Infrastructure.Identity;
 
 internal sealed class IdentityService(UserManager<ApplicationUser> userManager) : IIdentityService
 {
-    public async Task<Result<UserId>> CreateUserAsync(Email email, string password, CancellationToken cancellationToken)
+    public async Task<Result<UserId>> CreateUserAsync(Email email, UserName name, string password,
+        CancellationToken cancellationToken)
     {
-        var user = new ApplicationUser { UserName = email.Value, Email = email.Value };
+        var user = new ApplicationUser { UserName = name.Value, Email = email.Value };
         var result = await userManager.CreateAsync(user, password);
 
         return result.Succeeded
