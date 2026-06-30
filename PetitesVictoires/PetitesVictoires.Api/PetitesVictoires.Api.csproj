@@ -10,7 +10,8 @@
         <PackageReference Include="Ardalis.ListStartupServices" Version="1.1.4"/>
         <PackageReference Include="Aspire.Npgsql" Version="13.4.2"/>
         <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.2"/>
-        <PackageReference Include="FastEndpoints" Version="8.1.0"/>
+        <PackageReference Include="FastEndpoints" Version="8.2.0"/>
+        <PackageReference Include="FastEndpoints.Security" Version="8.2.0"/>
         <PackageReference Include="FastEndpoints.Swagger" Version="8.1.0"/>
         <PackageReference Include="Mediator.SourceGenerator" Version="3.0.2">
             <PrivateAssets>all</PrivateAssets>

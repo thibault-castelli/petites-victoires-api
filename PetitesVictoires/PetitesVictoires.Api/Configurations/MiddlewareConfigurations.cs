@@ -25,8 +25,6 @@ public static class MiddlewareConfigurations
                 app.UseHsts();
             }
 
-            app.UseFastEndpoints();
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwaggerGen(options => { options.Path = "/openapi/{documentName}.json"; },
@@ -46,18 +44,17 @@ public static class MiddlewareConfigurations
             app.UseHttpsRedirection(); // Note this will drop Authorization headers
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseFastEndpoints();
 
             var shouldMigrate = app.Environment.IsDevelopment();
-            if (shouldMigrate)
-            {
-                await app.MigrateDatabaseAsync();
-                await app.SeedAsync();
-            }
+            if (!shouldMigrate) return app;
+            await app.MigrateDatabaseAsync();
+            await app.SeedAsync();
 
             return app;
         }
 
-        public async Task MigrateDatabaseAsync()
+        private async Task MigrateDatabaseAsync()
         {
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
@@ -77,7 +74,7 @@ public static class MiddlewareConfigurations
             }
         }
 
-        public async Task SeedAsync()
+        private async Task SeedAsync()
         {
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;

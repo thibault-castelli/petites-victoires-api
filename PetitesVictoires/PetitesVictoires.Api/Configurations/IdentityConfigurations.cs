@@ -1,3 +1,4 @@
+using FastEndpoints.Security;
 using Microsoft.AspNetCore.Identity;
 
 namespace PetitesVictoires.Api.Configurations;
@@ -10,7 +11,7 @@ public static class IdentityConfigurations
         {
             logger.LogInformation("Adding Identity Configurations");
 
-            services.AddAuthentication();
+            services.AddAuthenticationCookie(TimeSpan.FromMinutes(60));
             services.AddAuthorization();
 
             services.Configure<IdentityOptions>(options =>
