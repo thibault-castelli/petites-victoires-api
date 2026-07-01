@@ -1,8 +1,8 @@
 @host=https://localhost
 @port=7280
 
-### GET request to example server
-GET {{host}}:{{port}}/
+### GET post
+GET {{host}}:{{port}}/posts/1
 
 ### Create user
 POST {{host}}:{{port}}/users
@@ -13,6 +13,9 @@ Content-Type: application/json
   "Name": "example",
   "Password": "Password1!"
 }
+
+### Get user
+GET {{host}}:{{port}}/users/3
 
 ### Sign in
 POST {{host}}:{{port}}/users/sign-in
