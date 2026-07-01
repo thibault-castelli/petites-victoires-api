@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace PetitesVictoires.Api.Users.GetUserById;
 
-public class GetUserByIdValidator : Validator<GetUserByIdRequest>
+public sealed class GetUserByIdValidator : Validator<GetUserByIdRequest>
 {
     public GetUserByIdValidator()
     {

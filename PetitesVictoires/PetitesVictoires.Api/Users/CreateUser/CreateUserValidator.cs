@@ -4,7 +4,7 @@ using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.Api.Users.CreateUser;
 
-public class CreateUserValidator : Validator<CreateUserRequest>
+public sealed class CreateUserValidator : Validator<CreateUserRequest>
 {
     public CreateUserValidator()
     {

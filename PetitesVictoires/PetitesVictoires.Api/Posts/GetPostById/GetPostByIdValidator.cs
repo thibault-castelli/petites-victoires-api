@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace PetitesVictoires.Api.Posts.GetPostById;
 
-public class GetPostByIdValidator : Validator<GetPostByIdRequest>
+public sealed class GetPostByIdValidator : Validator<GetPostByIdRequest>
 {
     public GetPostByIdValidator()
     {

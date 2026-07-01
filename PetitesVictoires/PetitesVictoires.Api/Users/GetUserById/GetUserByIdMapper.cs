@@ -3,7 +3,7 @@ using PetitesVictoires.UseCases.Users;
 
 namespace PetitesVictoires.Api.Users.GetUserById;
 
-public class GetUserByIdMapper : Mapper<GetUserByIdRequest, UserRecord, UserDto>
+public sealed class GetUserByIdMapper : Mapper<GetUserByIdRequest, UserRecord, UserDto>
 {
     public override UserRecord FromEntity(UserDto userEntity)
     {
