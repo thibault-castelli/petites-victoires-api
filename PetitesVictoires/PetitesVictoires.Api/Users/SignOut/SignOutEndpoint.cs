@@ -13,13 +13,14 @@ public class SignOutEndpoint : EndpointWithoutRequest<Results<NoContent, Problem
         Summary(s =>
         {
             s.Summary = "Sign out a user";
-            s.Responses[204] = "Success";
+            s.Responses[204] = "Successfully signed out user";
             s.Responses[500] = "Internal server error";
         });
         Tags("Users");
         Description(b => b
             .Produces<NoContent>()
-            .ProducesProblem(500));
+            .ProducesProblem(500)
+        );
     }
 
     public override async Task<Results<NoContent, ProblemHttpResult>> ExecuteAsync(CancellationToken cancellationToken)

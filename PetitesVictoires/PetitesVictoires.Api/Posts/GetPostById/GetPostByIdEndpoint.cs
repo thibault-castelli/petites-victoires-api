@@ -14,31 +14,28 @@ public class GetPostByIdEndpoint(IMediator mediator)
     {
         Get(GetPostByIdRequest.Route);
         AllowAnonymous();
-
         Summary(s =>
         {
             s.Summary = "Gets a post by ID";
-            s.Description =
-                "Retrieves a post by their unique identifier. Returns detailed post information including ID, content and date created.";
             s.ExampleRequest = new GetPostByIdRequest { PostId = 1 };
             s.ResponseExamples[200] = new PostRecord(1, "Hello World", DateTime.Now);
             s.Responses[200] = "Post found and returned successfully.";
             s.Responses[404] = "Post with specified ID not found.";
         });
-
         Tags("Posts");
-
-        Description(builder => builder
-            .Accepts<GetPostByIdRequest>()
+        Description(b => b
+            .Accepts<GetPostByIdRequest>("application/json")
             .Produces<PostRecord>(200, "application/json")
-            .ProducesProblem(404));
+            .ProducesProblem(404)
+        );
     }
 
     public override async Task<Results<Ok<PostRecord>, NotFound, ProblemHttpResult>> ExecuteAsync(
         GetPostByIdRequest request,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new GetPostQuery(PostId.From(request.PostId)), ct);
+        var query = new GetPostQuery(PostId.From(request.PostId));
+        var result = await mediator.Send(query, cancellationToken);
 
         return result.ToGetByIdResult(Map.FromEntity);
     }

@@ -20,12 +20,11 @@ public class SignInEndpoint(IMediator mediator)
         Summary(s =>
         {
             s.Summary = "Sign in a user";
-            s.Description = "Sign in a user with the provided email and password";
             s.ExampleRequest = new SignInRequest
                 { EmailAddress = "example@mail.com", Password = "password", RememberMe = true };
-            s.Responses[204] = "Success";
-            s.Responses[400] = "Bad Request";
-            s.Responses[401] = "Forbidden";
+            s.Responses[204] = "Successfully signed in user";
+            s.Responses[400] = "Invalid input data (validation errors)";
+            s.Responses[401] = "Incorrect username or password";
             s.Responses[500] = "Internal server error";
         });
         Tags("Users");
@@ -34,15 +33,15 @@ public class SignInEndpoint(IMediator mediator)
             .Produces<NoContent>()
             .ProducesProblem(400)
             .ProducesProblem(401)
-            .ProducesProblem(500));
+            .ProducesProblem(500)
+        );
     }
 
     public override async Task<Results<NoContent, ValidationProblem, UnauthorizedHttpResult, ProblemHttpResult>>
         ExecuteAsync(SignInRequest request, CancellationToken cancellationToken)
     {
-        var result =
-            await mediator.Send(
-                new SignInCommand(Email.From(request.EmailAddress), request.Password), cancellationToken);
+        var command = new SignInCommand(Email.From(request.EmailAddress), request.Password);
+        var result = await mediator.Send(command, cancellationToken);
 
         if (!result.IsSuccess)
             return TypedResults.Problem(

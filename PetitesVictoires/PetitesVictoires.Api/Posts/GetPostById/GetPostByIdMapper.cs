@@ -5,8 +5,12 @@ namespace PetitesVictoires.Api.Posts.GetPostById;
 
 public sealed class GetPostByIdMapper : Mapper<GetPostByIdRequest, PostRecord, PostDto>
 {
-    public override PostRecord FromEntity(PostDto e)
+    public override PostRecord FromEntity(PostDto postEntity)
     {
-        return new PostRecord(e.Id.Value, e.Content.Value, e.CreatedAt);
+        return new PostRecord(
+            postEntity.Id.Value,
+            postEntity.Content.Value,
+            postEntity.CreatedAt
+        );
     }
 }

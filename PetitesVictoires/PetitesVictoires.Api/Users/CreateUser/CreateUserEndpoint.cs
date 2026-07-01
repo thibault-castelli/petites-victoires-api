@@ -18,13 +18,12 @@ public class CreateUserEndpoint(IMediator mediator)
         Summary(s =>
         {
             s.Summary = "Creates a new user";
-            s.Description = "Creates a new user with the provided email address, name and password.";
             s.ExampleRequest = new CreateUserRequest
                 { EmailAddress = "example@mail.com", Name = "example", Password = "password" };
             s.ResponseExamples[201] = new UserRecord(1, "example@mail.com", "example", DateTime.UtcNow);
 
             s.Responses[201] = "User created successfully";
-            s.Responses[400] = "Invalid input data (validation errors";
+            s.Responses[400] = "Invalid input data (validation errors)";
             s.Responses[500] = "Internal server error";
         });
         Tags("Users");
@@ -32,14 +31,19 @@ public class CreateUserEndpoint(IMediator mediator)
             .Accepts<CreateUserRequest>("application/json")
             .Produces<UserRecord>(201, "application/json")
             .ProducesProblem(400)
-            .ProducesProblem(500));
+            .ProducesProblem(500)
+        );
     }
 
     public override async Task<Results<Created<UserRecord>, ValidationProblem, ProblemHttpResult>>
         ExecuteAsync(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new CreateUserCommand(Email.From(request.EmailAddress),
-            UserName.From(request.Name), request.Password), cancellationToken);
+        var command = new CreateUserCommand(
+            Email.From(request.EmailAddress),
+            UserName.From(request.Name),
+            request.Password
+        );
+        var result = await mediator.Send(command, cancellationToken);
 
         return result.ToCreatedResult(id => $"/Users/{id}",
             id => new UserRecord(id.Value, request.EmailAddress, request.Name, DateTime.UtcNow));
