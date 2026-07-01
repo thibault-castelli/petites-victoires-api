@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using PetitesVictoires.Core.Interfaces;
 using PetitesVictoires.Infrastructure.Data;
 using PetitesVictoires.Infrastructure.Identity;
+using PetitesVictoires.Infrastructure.Queries;
+using PetitesVictoires.UseCases.Users.List;
 
 namespace PetitesVictoires.Infrastructure;
 
@@ -38,7 +40,8 @@ public static class InfrastructureServiceExtensions
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
                 .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>))
                 .AddScoped<IUnitOfWork, EfUnitOfWork>()
-                .AddScoped<IIdentityService, IdentityService>();
+                .AddScoped<IIdentityService, IdentityService>()
+                .AddScoped<IListUsersQueryService, ListUsersQueryService>();
 
             logger.LogInformation("{Project} services registered", "Infrastructure");
 

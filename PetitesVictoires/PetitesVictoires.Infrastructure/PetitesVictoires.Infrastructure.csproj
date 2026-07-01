@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\PetitesVictoires.Core\PetitesVictoires.Core.csproj"/>
+        <ProjectReference Include="..\PetitesVictoires.UseCases\PetitesVictoires.UseCases.csproj"/>
     </ItemGroup>
 
 </Project>

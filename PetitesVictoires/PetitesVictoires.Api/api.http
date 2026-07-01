@@ -17,6 +17,9 @@ Content-Type: application/json
 ### Get user
 GET {{host}}:{{port}}/users/3
 
+### List users
+GET {{host}}:{{port}}/users?page=1
+
 ### Sign in
 POST {{host}}:{{port}}/users/sign-in
 Content-Type: application/json
