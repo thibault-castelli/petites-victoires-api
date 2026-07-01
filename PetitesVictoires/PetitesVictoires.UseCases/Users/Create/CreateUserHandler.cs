@@ -14,10 +14,10 @@ public class CreateUserHandler(IRepository<User> repository, IIdentityService id
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 
         var identityResult =
-            await identityService.CreateUserAsync(request.Email, request.Name, request.Password, cancellationToken);
+            await identityService.CreateUserAsync(request.EmailAddress, request.Name, request.Password, cancellationToken);
         if (!identityResult.IsSuccess) return identityResult;
 
-        var newUser = new User(identityResult.Value, request.Email, request.Name);
+        var newUser = new User(identityResult.Value, request.EmailAddress, request.Name);
         var createdUser = await repository.AddAsync(newUser, cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);

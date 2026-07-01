@@ -8,11 +8,11 @@ namespace PetitesVictoires.UseCases.Posts.Get;
 
 public class GetPostHandler(IReadRepository<Post> repository) : IQueryHandler<GetPostQuery, Result<PostDto>>
 {
-    public async ValueTask<Result<PostDto>> Handle(GetPostQuery query, CancellationToken ct)
+    public async ValueTask<Result<PostDto>> Handle(GetPostQuery query, CancellationToken cancellationToken)
     {
         var specification = new PostByIdSpecification(query.PostId);
-        var entity = await repository.FirstOrDefaultAsync(specification, ct);
-        if (entity == null) return Result.NotFound();
+        var entity = await repository.FirstOrDefaultAsync(specification, cancellationToken);
+        if (entity is null) return Result.NotFound();
 
         return new PostDto(entity.Id, entity.Content, entity.CreatedAt);
     }
