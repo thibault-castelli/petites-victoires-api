@@ -1,7 +1,7 @@
 using FastEndpoints;
 using PetitesVictoires.UseCases.Posts;
 
-namespace PetitesVictoires.Api.Posts.GetPostById;
+namespace PetitesVictoires.Api.Posts.Get;
 
 public sealed class GetPostByIdMapper : Mapper<GetPostByIdRequest, PostRecord, PostDto>
 {

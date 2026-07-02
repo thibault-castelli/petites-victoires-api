@@ -1,7 +1,7 @@
 using FastEndpoints;
 using PetitesVictoires.UseCases.Users;
 
-namespace PetitesVictoires.Api.Users.GetUserById;
+namespace PetitesVictoires.Api.Users.Get;
 
 public sealed class GetUserByIdMapper : Mapper<GetUserByIdRequest, UserRecord, UserDto>
 {

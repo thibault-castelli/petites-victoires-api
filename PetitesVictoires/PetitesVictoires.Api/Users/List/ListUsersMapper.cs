@@ -2,7 +2,7 @@ using FastEndpoints;
 using PetitesVictoires.UseCases;
 using PetitesVictoires.UseCases.Users;
 
-namespace PetitesVictoires.Api.Users.ListUsers;
+namespace PetitesVictoires.Api.Users.List;
 
 public sealed class ListUsersMapper : Mapper<ListUsersRequest, ListUsersResponse, PagedResult<UserDto>>
 {

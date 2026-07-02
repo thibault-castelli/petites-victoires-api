@@ -1,4 +1,4 @@
-namespace PetitesVictoires.Api.Users.GetUserById;
+namespace PetitesVictoires.Api.Users.Get;
 
 public record GetUserByIdRequest
 {

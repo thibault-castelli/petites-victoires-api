@@ -5,7 +5,7 @@ using PetitesVictoires.Api.Extensions;
 using PetitesVictoires.UseCases;
 using PetitesVictoires.UseCases.Users.List;
 
-namespace PetitesVictoires.Api.Users.ListUsers;
+namespace PetitesVictoires.Api.Users.List;
 
 public class ListUsersEndpoint(IMediator mediator)
     : Endpoint<ListUsersRequest, Results<Ok<ListUsersResponse>, ProblemHttpResult>, ListUsersMapper>

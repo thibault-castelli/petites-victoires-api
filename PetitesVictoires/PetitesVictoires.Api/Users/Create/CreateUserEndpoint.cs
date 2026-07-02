@@ -6,7 +6,7 @@ using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
 using PetitesVictoires.UseCases.Users.Create;
 
-namespace PetitesVictoires.Api.Users.CreateUser;
+namespace PetitesVictoires.Api.Users.Create;
 
 public class CreateUserEndpoint(IMediator mediator)
     : Endpoint<CreateUserRequest, Results<Created<UserRecord>, ValidationProblem, ProblemHttpResult>>

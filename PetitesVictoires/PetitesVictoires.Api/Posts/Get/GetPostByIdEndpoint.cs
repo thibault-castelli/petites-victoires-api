@@ -5,7 +5,7 @@ using PetitesVictoires.Api.Extensions;
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.UseCases.Posts.Get;
 
-namespace PetitesVictoires.Api.Posts.GetPostById;
+namespace PetitesVictoires.Api.Posts.Get;
 
 public class GetPostByIdEndpoint(IMediator mediator)
     : Endpoint<GetPostByIdRequest, Results<Ok<PostRecord>, NotFound, ProblemHttpResult>, GetPostByIdMapper>

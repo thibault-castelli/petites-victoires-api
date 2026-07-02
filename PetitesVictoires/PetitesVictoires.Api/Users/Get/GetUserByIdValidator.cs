@@ -1,7 +1,7 @@
 using FastEndpoints;
 using FluentValidation;
 
-namespace PetitesVictoires.Api.Users.GetUserById;
+namespace PetitesVictoires.Api.Users.Get;
 
 public sealed class GetUserByIdValidator : Validator<GetUserByIdRequest>
 {

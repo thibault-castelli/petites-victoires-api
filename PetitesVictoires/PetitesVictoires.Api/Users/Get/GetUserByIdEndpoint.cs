@@ -5,7 +5,7 @@ using PetitesVictoires.Api.Extensions;
 using PetitesVictoires.Core.UserAggregate;
 using PetitesVictoires.UseCases.Users.Get;
 
-namespace PetitesVictoires.Api.Users.GetUserById;
+namespace PetitesVictoires.Api.Users.Get;
 
 public class GetUserByIdEndpoint(IMediator mediator)
     : Endpoint<GetUserByIdRequest, Results<Ok<UserRecord>, NotFound, ProblemHttpResult>, GetUserByIdMapper>

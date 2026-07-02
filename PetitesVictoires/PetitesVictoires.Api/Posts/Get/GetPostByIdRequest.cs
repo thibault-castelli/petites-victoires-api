@@ -1,4 +1,4 @@
-namespace PetitesVictoires.Api.Posts.GetPostById;
+namespace PetitesVictoires.Api.Posts.Get;
 
 public record GetPostByIdRequest
 {

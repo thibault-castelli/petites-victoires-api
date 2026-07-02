@@ -15,12 +15,14 @@ Content-Type: application/json
 }
 
 ### Update user
-PUT {{host}}:{{port}}/users/3
+PUT {{host}}:{{port}}/users/4
 Content-Type: application/json
 
 {
   "EmailAddress": "new-example@mail.com",
-  "Name": "new-example"
+  "Name": "new-example",
+  "CurrentPassword": "Password1!",
+  "NewPassword": "Password2?"
 }
 
 ### Delete user

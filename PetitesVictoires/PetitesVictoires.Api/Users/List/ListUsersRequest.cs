@@ -1,7 +1,7 @@
 using FastEndpoints;
 using PetitesVictoires.UseCases;
 
-namespace PetitesVictoires.Api.Users.ListUsers;
+namespace PetitesVictoires.Api.Users.List;
 
 public record ListUsersRequest
 {

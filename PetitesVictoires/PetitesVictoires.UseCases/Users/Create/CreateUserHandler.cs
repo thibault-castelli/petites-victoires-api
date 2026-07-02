@@ -14,7 +14,7 @@ public class CreateUserHandler(IRepository<User> repository, IIdentityService id
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 
         var identityResult =
-            await identityService.CreateUserAsync(command.EmailAddress, command.Name, command.Password,
+            await identityService.CreateUserAsync(command.EmailAddress, command.Name, command.Password.Trim(),
                 cancellationToken);
         if (!identityResult.IsSuccess) return identityResult;
 

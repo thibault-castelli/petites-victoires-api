@@ -1,4 +1,4 @@
-namespace PetitesVictoires.Api.Users.CreateUser;
+namespace PetitesVictoires.Api.Users.Create;
 
 public record CreateUserRequest
 {

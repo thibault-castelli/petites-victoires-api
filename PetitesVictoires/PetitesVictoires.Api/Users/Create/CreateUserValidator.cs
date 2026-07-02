@@ -3,7 +3,7 @@ using FluentValidation;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
 
-namespace PetitesVictoires.Api.Users.CreateUser;
+namespace PetitesVictoires.Api.Users.Create;
 
 public sealed class CreateUserValidator : Validator<CreateUserRequest>
 {
