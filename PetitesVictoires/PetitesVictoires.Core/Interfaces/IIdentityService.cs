@@ -11,4 +11,10 @@ public interface IIdentityService
 
     Task<Result<AuthenticatedUser>> ValidateCredentialsAsync(Email emailAddress, string password,
         CancellationToken cancellationToken);
+
+    Task<Result> UpdateUserAsync(UserId userId, Email emailAddress, UserName name);
+
+    Task<Result> ChangePasswordAsync(UserId userId, string currentPassword, string newPassword);
+
+    Task<Result> DeleteUserAsync(UserId userId, CancellationToken cancellationToken);
 }

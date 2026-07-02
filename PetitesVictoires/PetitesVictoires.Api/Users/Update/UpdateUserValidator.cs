@@ -1,9 +1,10 @@
 using FastEndpoints;
 using FluentValidation;
+using PetitesVictoires.Api.Users.UpdateUser;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
 
-namespace PetitesVictoires.Api.Users.UpdateUser;
+namespace PetitesVictoires.Api.Users.Update;
 
 public sealed class UpdateUserValidator : Validator<UpdateUserRequest>
 {

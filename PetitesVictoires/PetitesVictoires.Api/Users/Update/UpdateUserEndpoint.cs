@@ -3,11 +3,12 @@ using Mediator;
 using Microsoft.AspNetCore.Http.HttpResults;
 using PetitesVictoires.Api.Extensions;
 using PetitesVictoires.Api.PreProcessors;
+using PetitesVictoires.Api.Users.UpdateUser;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
 using PetitesVictoires.UseCases.Users.Update;
 
-namespace PetitesVictoires.Api.Users.UpdateUser;
+namespace PetitesVictoires.Api.Users.Update;
 
 public class UpdateUserEndpoint(IMediator mediator)
     : Endpoint<UpdateUserRequest, Results<Ok<UserRecord>, NotFound, ProblemHttpResult>, UpdateUserMapper>
@@ -45,8 +46,13 @@ public class UpdateUserEndpoint(IMediator mediator)
         UpdateUserRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateUserCommand(UserId.From(request.UserId), Email.From(request.EmailAddress),
-            UserName.From(request.Name));
+        var command = new UpdateUserCommand(
+            UserId.From(request.UserId),
+            Email.From(request.EmailAddress),
+            UserName.From(request.Name),
+            request.CurrentPassword,
+            request.NewPassword
+        );
         var result = await mediator.Send(command, cancellationToken);
 
         return result.ToUpdateResult(Map.FromEntity);

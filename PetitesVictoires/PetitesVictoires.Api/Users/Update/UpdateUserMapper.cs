@@ -1,7 +1,8 @@
 using FastEndpoints;
+using PetitesVictoires.Api.Users.UpdateUser;
 using PetitesVictoires.UseCases.Users;
 
-namespace PetitesVictoires.Api.Users.UpdateUser;
+namespace PetitesVictoires.Api.Users.Update;
 
 public sealed class UpdateUserMapper : Mapper<UpdateUserRequest, UserRecord, UserDto>
 {
