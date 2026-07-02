@@ -23,6 +23,9 @@ Content-Type: application/json
   "Name": "new-example"
 }
 
+### Delete user
+DELETE {{host}}:{{port}}/users/3
+
 ### Get user
 GET {{host}}:{{port}}/users/3
 
