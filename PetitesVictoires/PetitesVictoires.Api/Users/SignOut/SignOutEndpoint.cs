@@ -14,11 +14,13 @@ public class SignOutEndpoint : EndpointWithoutRequest<Results<NoContent, Problem
         {
             s.Summary = "Sign out a user";
             s.Responses[204] = "Successfully signed out user";
+            s.Responses[401] = "Unauthorized, user not signed in";
             s.Responses[500] = "Internal server error";
         });
         Tags("Users");
         Description(b => b
             .Produces<NoContent>()
+            .ProducesProblem(401)
             .ProducesProblem(500)
         );
     }

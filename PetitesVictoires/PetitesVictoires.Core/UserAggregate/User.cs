@@ -20,12 +20,17 @@ public class User : BaseEntity<UserId>, IAggregateRoot
     public Email EmailAddress { get; private set; }
     public UserName Name { get; private set; }
 
-    public User UpdateUserName(UserName newName)
+    public User UpdateEmailAddress(Email emailAddress)
+    {
+        if (EmailAddress == emailAddress) return this;
+        EmailAddress = emailAddress;
+        return this;
+    }
+
+    public User UpdateName(UserName newName)
     {
         if (Name == newName) return this;
-
         Name = newName;
-        MarkUpdated();
         return this;
     }
 }

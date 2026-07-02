@@ -3,25 +3,24 @@ using FluentValidation;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
 
-namespace PetitesVictoires.Api.Users.CreateUser;
+namespace PetitesVictoires.Api.Users.UpdateUser;
 
-public sealed class CreateUserValidator : Validator<CreateUserRequest>
+public sealed class UpdateUserValidator : Validator<UpdateUserRequest>
 {
-    public CreateUserValidator()
+    public UpdateUserValidator()
     {
-        RuleFor(r => r.EmailAddress)
+        RuleFor(request => request.UserId)
+            .GreaterThan(0);
+
+        RuleFor(request => request.EmailAddress)
             .NotEmpty()
             .WithMessage("Email address is required")
             .MaximumLength(Email.MaxLength)
             .EmailAddress();
 
-        RuleFor(r => r.Name)
+        RuleFor(request => request.Name)
             .NotEmpty()
             .WithMessage("Name is required")
             .MaximumLength(UserName.MaxLength);
-
-        RuleFor(r => r.Password)
-            .NotEmpty()
-            .WithMessage("Password is required");
     }
 }

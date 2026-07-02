@@ -9,7 +9,7 @@ public abstract class BaseEntity<TId> : HasDomainEventsBase
     public DateTime? UpdatedAt { get; private set; }
     public DateTime? DeletedAt { get; private set; }
 
-    protected void MarkUpdated()
+    public void MarkUpdated()
     {
         UpdatedAt = DateTime.UtcNow;
     }
