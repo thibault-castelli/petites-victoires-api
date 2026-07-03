@@ -45,3 +45,19 @@ Content-Type: application/json
 
 ### Sign out
 GET {{host}}:{{port}}/users/sign-out
+
+### Create like
+POST {{host}}:{{port}}/likes
+Content-Type: application/json
+
+{
+  "PostId": 1
+}
+
+### Delete like
+DELETE {{host}}:{{port}}/likes
+Content-Type: application/json
+
+{
+  "PostId": 1
+}
