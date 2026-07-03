@@ -2,7 +2,7 @@ using Vogen;
 
 namespace PetitesVictoires.Core.PostAggregate;
 
-[ValueObject<int>]
+[ValueObject<int>(deserializationStrictness: DeserializationStrictness.AllowAnything)]
 public readonly partial struct PostId
 {
     private static Validation Validate(int value)

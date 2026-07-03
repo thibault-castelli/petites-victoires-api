@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PetitesVictoires.Core.LikeAggregate;
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Core.UserAggregate;
 using PetitesVictoires.Infrastructure.Identity;
@@ -12,7 +13,8 @@ public class PetitesVictoiresDbContext(DbContextOptions<PetitesVictoiresDbContex
     : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>(options)
 {
     public DbSet<Post> Posts => Set<Post>();
-    public DbSet<User> Users => Set<User>();
+    public new DbSet<User> Users => Set<User>();
+    public DbSet<Like> Likes => Set<Like>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

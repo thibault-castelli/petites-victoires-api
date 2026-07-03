@@ -2,7 +2,7 @@ using Vogen;
 
 namespace PetitesVictoires.Core.UserAggregate;
 
-[ValueObject<int>]
+[ValueObject<int>(deserializationStrictness: DeserializationStrictness.AllowAnything)]
 public readonly partial struct UserId
 {
     private static Validation Validate(int value)
