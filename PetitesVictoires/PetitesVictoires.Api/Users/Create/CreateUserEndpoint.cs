@@ -21,7 +21,6 @@ public class CreateUserEndpoint(IMediator mediator)
             s.ExampleRequest = new CreateUserRequest
                 { EmailAddress = "example@mail.com", Name = "example", Password = "password" };
             s.ResponseExamples[201] = new UserRecord(1, "example@mail.com", "example", DateTime.UtcNow);
-
             s.Responses[201] = "User created successfully";
             s.Responses[400] = "Invalid input data (validation errors)";
             s.Responses[500] = "Internal server error";

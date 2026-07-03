@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using FastEndpoints;
+using PetitesVictoires.Api.Extensions;
 
 namespace PetitesVictoires.Api.PreProcessors;
 
@@ -7,8 +7,8 @@ public sealed class EnsureSelfPreProcessor<TRequest> : IPreProcessor<TRequest> w
 {
     public Task PreProcessAsync(IPreProcessorContext<TRequest> context, CancellationToken ct)
     {
-        var claimId = context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var isForbidden = context.Request is null || !int.TryParse(claimId, out var authenticatedId) ||
+        var isForbidden = context.Request is null ||
+                          !context.HttpContext.User.TryGetAuthenticatedUserId(out var authenticatedId) ||
                           authenticatedId != context.Request.UserId;
         if (isForbidden) return context.HttpContext.Response.SendForbiddenAsync(ct);
 
