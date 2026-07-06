@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PetitesVictoires.Core.PostAggregate;
+using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.Infrastructure.Data.Configurations;
 
@@ -18,8 +19,19 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .HasMaxLength(PostContent.MaxLength)
             .IsRequired();
 
+        builder.Property(e => e.UserId)
+            .HasVogenConversion()
+            .IsRequired();
+
         builder.Property(e => e.CreatedAt)
             .IsRequired();
+
+        builder.HasIndex(e => e.UserId);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasQueryFilter(e => e.DeletedAt == null);
     }

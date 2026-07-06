@@ -209,7 +209,12 @@ namespace PetitesVictoires.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -369,6 +374,15 @@ namespace PetitesVictoires.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PetitesVictoires.Core.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PetitesVictoires.Core.PostAggregate.Post", b =>
+                {
                     b.HasOne("PetitesVictoires.Core.UserAggregate.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")

@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ### Update user
-PUT {{host}}:{{port}}/users/4
+PUT {{host}}:{{port}}/users/1
 Content-Type: application/json
 
 {
@@ -26,10 +26,10 @@ Content-Type: application/json
 }
 
 ### Delete user
-DELETE {{host}}:{{port}}/users/3
+DELETE {{host}}:{{port}}/users/1
 
 ### Get user
-GET {{host}}:{{port}}/users/3
+GET {{host}}:{{port}}/users/1
 
 ### List users
 GET {{host}}:{{port}}/users?page=1
