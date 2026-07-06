@@ -18,7 +18,14 @@ public class GetPostByIdEndpoint(IMediator mediator)
         {
             s.Summary = "Gets a post by ID";
             s.ExampleRequest = new GetPostByIdRequest { PostId = 1 };
-            s.ResponseExamples[200] = new PostRecord(1, "Hello World", DateTime.Now);
+            s.ResponseExamples[200] = new PostRecord(
+                1,
+                "Hello World",
+                1,
+                "example@mail.com",
+                "example",
+                DateTime.Now
+            );
             s.Responses[200] = "Post found and returned successfully.";
             s.Responses[404] = "Post with specified ID not found.";
         });

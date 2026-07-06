@@ -10,6 +10,9 @@ public sealed class GetPostByIdMapper : Mapper<GetPostByIdRequest, PostRecord, P
         return new PostRecord(
             postEntity.Id.Value,
             postEntity.Content.Value,
+            postEntity.UserId.Value,
+            postEntity.UserEmailAddress.Value,
+            postEntity.UserName.Value,
             postEntity.CreatedAt
         );
     }

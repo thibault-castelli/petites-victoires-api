@@ -9,6 +9,7 @@ using PetitesVictoires.Core.Interfaces;
 using PetitesVictoires.Infrastructure.Data;
 using PetitesVictoires.Infrastructure.Identity;
 using PetitesVictoires.Infrastructure.Queries;
+using PetitesVictoires.UseCases.Posts.Get;
 using PetitesVictoires.UseCases.Users.List;
 
 namespace PetitesVictoires.Infrastructure;
@@ -41,7 +42,8 @@ public static class InfrastructureServiceExtensions
                 .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>))
                 .AddScoped<IUnitOfWork, EfUnitOfWork>()
                 .AddScoped<IIdentityService, IdentityService>()
-                .AddScoped<IListUsersQueryService, ListUsersQueryService>();
+                .AddScoped<IListUsersQueryService, ListUsersQueryService>()
+                .AddScoped<IGetPostQueryService, GetPostQueryService>();
 
             logger.LogInformation("{Project} services registered", "Infrastructure");
 

@@ -1,19 +1,13 @@
 using Ardalis.Result;
-using Ardalis.SharedKernel;
 using Mediator;
-using PetitesVictoires.Core.PostAggregate;
-using PetitesVictoires.Core.PostAggregate.Specifications;
 
 namespace PetitesVictoires.UseCases.Posts.Get;
 
-public class GetPostHandler(IReadRepository<Post> repository) : IQueryHandler<GetPostQuery, Result<PostDto>>
+public class GetPostHandler(IGetPostQueryService queryService) : IQueryHandler<GetPostQuery, Result<PostDto>>
 {
     public async ValueTask<Result<PostDto>> Handle(GetPostQuery query, CancellationToken cancellationToken)
     {
-        var specification = new PostByIdSpecification(query.PostId);
-        var entity = await repository.FirstOrDefaultAsync(specification, cancellationToken);
-        if (entity is null) return Result.NotFound();
-
-        return new PostDto(entity.Id, entity.Content, entity.CreatedAt);
+        var post = await queryService.GetPostAsync(query.PostId);
+        return post is null ? Result.NotFound() : Result.Success(post);
     }
 }
