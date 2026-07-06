@@ -7,7 +7,7 @@ using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.UseCases.Posts.Update;
 
-public class UpdatePostHandler(IRepository<Post> postRepository, IRepository<User> userRepository)
+public class UpdatePostHandler(IRepository<Post> postRepository, IReadRepository<User> userRepository)
     : ICommandHandler<UpdatePostCommand, Result<PostDto>>
 {
     public async ValueTask<Result<PostDto>> Handle(UpdatePostCommand command, CancellationToken cancellationToken)

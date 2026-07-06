@@ -1,4 +1,3 @@
-using Ardalis.Result;
 using FastEndpoints;
 using Mediator;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +19,7 @@ public class UpdatePostEndpoint(IMediator mediator)
         {
             s.Summary = "Update signed in user";
             s.ExampleRequest = new UpdatePostRequest
-                { PostId = 1, PostContent = "new post content", UserId = 1 };
+                { PostId = 1, PostContent = "new post content" };
             s.ResponseExamples[200] =
                 new PostRecord(1, "new post content", 1, "example@mail.com", "example", DateTime.UtcNow);
             s.Responses[200] = "Post updated successfully";
@@ -49,7 +48,7 @@ public class UpdatePostEndpoint(IMediator mediator)
         var command = new UpdatePostCommand(
             PostId.From(request.PostId),
             PostContent.From(request.PostContent),
-            UserId.From(request.UserId)
+            UserId.From(User.GetAuthenticatedUserId())
         );
         var result = await mediator.Send(command, cancellationToken);
 

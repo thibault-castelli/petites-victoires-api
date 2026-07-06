@@ -15,8 +15,5 @@ public sealed class UpdatePostValidator : Validator<UpdatePostRequest>
             .NotEmpty()
             .WithMessage("Content is required")
             .MaximumLength(PostContent.MaxLength);
-
-        RuleFor(r => r.UserId)
-            .GreaterThan(0);
     }
 }

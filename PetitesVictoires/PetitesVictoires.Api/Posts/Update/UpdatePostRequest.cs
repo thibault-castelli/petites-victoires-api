@@ -6,10 +6,9 @@ public record UpdatePostRequest
 
     public int PostId { get; init; }
     public required string PostContent { get; init; }
-    public int UserId { get; init; }
 
-    public static string BuildRoute(int userId)
+    public static string BuildRoute(int postId)
     {
-        return Route.Replace("{UserId:int}", userId.ToString());
+        return Route.Replace("{PostId:int}", postId.ToString());
     }
 }

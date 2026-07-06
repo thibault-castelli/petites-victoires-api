@@ -6,7 +6,7 @@ using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.UseCases.Posts.Create;
 
-public class CreatePostHandler(IRepository<Post> postRepository, IRepository<User> userRepository)
+public class CreatePostHandler(IRepository<Post> postRepository, IReadRepository<User> userRepository)
     : ICommandHandler<CreatePostCommand, Result<PostDto>>
 {
     public async ValueTask<Result<PostDto>> Handle(CreatePostCommand command, CancellationToken cancellationToken)
