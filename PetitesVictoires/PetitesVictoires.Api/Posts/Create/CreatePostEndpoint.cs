@@ -9,7 +9,7 @@ using PetitesVictoires.UseCases.Posts.Create;
 namespace PetitesVictoires.Api.Posts.Create;
 
 public class CreatePostEndpoint(IMediator mediator)
-    : Endpoint<CreatePostRequest, Results<Created<PostId>, ValidationProblem, ProblemHttpResult>>
+    : Endpoint<CreatePostRequest, Results<Created<PostRecord>, ValidationProblem, ProblemHttpResult>, CreatePostMapper>
 {
     public override void Configure()
     {
@@ -24,7 +24,7 @@ public class CreatePostEndpoint(IMediator mediator)
             s.Responses[401] = "Unauthorized, user not signed in";
             s.Responses[500] = "Internal server error";
         });
-        Tags("Likes");
+        Tags("Posts");
         Description(b => b
             .Accepts<CreatePostRequest>("application/json")
             .Produces<PostId>(201, "application/json")
@@ -34,13 +34,13 @@ public class CreatePostEndpoint(IMediator mediator)
         );
     }
 
-    public override async Task<Results<Created<PostId>, ValidationProblem, ProblemHttpResult>> ExecuteAsync(
+    public override async Task<Results<Created<PostRecord>, ValidationProblem, ProblemHttpResult>> ExecuteAsync(
         CreatePostRequest request, CancellationToken cancellationToken)
     {
         var command =
             new CreatePostCommand(PostContent.From(request.Content), UserId.From(User.GetAuthenticatedUserId()));
         var result = await mediator.Send(command, cancellationToken);
 
-        return result.ToCreatedResult(id => "", id => id);
+        return result.ToCreatedResult(p => $"/Posts/{p.Id.Value}", Map.FromEntity);
     }
 }

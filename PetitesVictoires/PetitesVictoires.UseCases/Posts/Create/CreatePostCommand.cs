@@ -5,4 +5,4 @@ using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.UseCases.Posts.Create;
 
-public record CreatePostCommand(PostContent Content, UserId UserId) : ICommand<Result<PostId>>;
+public record CreatePostCommand(PostContent Content, UserId UserId) : ICommand<Result<PostDto>>;
