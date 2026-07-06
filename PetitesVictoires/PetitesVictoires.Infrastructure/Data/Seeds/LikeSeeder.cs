@@ -5,8 +5,8 @@ namespace PetitesVictoires.Infrastructure.Data.Seeds;
 
 public class LikeSeeder
 {
-    private static readonly LikeId LikeId1 = LikeId.From(1);
-    private static readonly LikeId LikeId2 = LikeId.From(2);
+    private static readonly LikeId LikeId1 = LikeId.From(9998);
+    private static readonly LikeId LikeId2 = LikeId.From(9999);
 
     public static async Task SeedAsync(PetitesVictoiresDbContext dbContext)
     {
