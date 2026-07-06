@@ -12,7 +12,7 @@ public class UpdateUserHandler(IRepository<User> repository, IIdentityService id
     public async ValueTask<Result<UserDto>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
     {
         var existingUser = await repository.GetByIdAsync(command.UserId, cancellationToken);
-        if (existingUser is null) return Result.NotFound();
+        if (existingUser is null) return Result.NotFound("User not found");
 
         existingUser.UpdateEmailAddress(command.EmailAddress);
         existingUser.UpdateName(command.Name);

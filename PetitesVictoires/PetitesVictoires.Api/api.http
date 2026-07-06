@@ -57,6 +57,15 @@ Content-Type: application/json
   "Content": "Test"
 }
 
+### Update post
+PUT {{host}}:{{port}}/posts/1
+Content-Type: application/json
+
+{
+  "PostContent": "new content",
+  "UserId": 1
+}
+
 ### Create like
 POST {{host}}:{{port}}/likes
 Content-Type: application/json

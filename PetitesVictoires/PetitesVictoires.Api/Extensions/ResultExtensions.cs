@@ -52,6 +52,26 @@ public static class ResultExtensions
     }
 
   /// <summary>
+  ///     Maps Result to TypedResults for Update endpoints that return Ok, NotFound, Forbid, or ProblemHttpResult
+  /// </summary>
+  public static Results<Ok<TResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>
+        ToUpdateResultWithForbidden<TValue, TResponse>(
+        this Result<TValue> result,
+        Func<TValue, TResponse> mapResponse)
+    {
+        return result.Status switch
+        {
+            ResultStatus.Ok => TypedResults.Ok(mapResponse(result.Value)),
+            ResultStatus.NotFound => TypedResults.NotFound(),
+            ResultStatus.Forbidden => TypedResults.Forbid(),
+            _ => TypedResults.Problem(
+                title: "Update failed",
+                detail: string.Join("; ", result.Errors),
+                statusCode: StatusCodes.Status400BadRequest)
+        };
+    }
+
+  /// <summary>
   ///     Maps Result to TypedResults for Delete endpoints that return NoContent, NotFound, or ProblemHttpResult
   /// </summary>
   public static Results<NoContent, NotFound, ProblemHttpResult> ToDeleteResult(

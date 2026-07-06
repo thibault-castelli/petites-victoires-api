@@ -26,7 +26,6 @@ public class Post : BaseEntity<PostId>, IAggregateRoot
         if (Content == newContent) return this;
 
         Content = newContent;
-        MarkUpdated();
         return this;
     }
 }

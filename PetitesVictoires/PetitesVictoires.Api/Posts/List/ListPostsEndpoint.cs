@@ -30,7 +30,7 @@ public class ListPostsEndpoint(IMediator mediator)
             s.Responses[200] = "Paginated list of users returned successfully";
             s.Responses[400] = "Invalid parameters";
         });
-        Tags("Users");
+        Tags("Posts");
         Description(b => b
             .Accepts<ListPostsRequest>()
             .Produces<ListPostsResponse>(200, "application/json")

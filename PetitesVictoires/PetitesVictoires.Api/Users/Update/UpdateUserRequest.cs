@@ -5,6 +5,7 @@ namespace PetitesVictoires.Api.Users.UpdateUser;
 public record UpdateUserRequest : IOwnedResource
 {
     public const string Route = "/Users/{UserId:int}";
+
     public required string EmailAddress { get; init; }
     public required string Name { get; init; }
     public string? CurrentPassword { get; init; }
