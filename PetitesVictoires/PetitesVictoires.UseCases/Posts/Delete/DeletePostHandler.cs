@@ -2,7 +2,6 @@ using Ardalis.Result;
 using Ardalis.SharedKernel;
 using Mediator;
 using PetitesVictoires.Core.PostAggregate;
-using PetitesVictoires.Core.PostAggregate.Specifications;
 
 namespace PetitesVictoires.UseCases.Posts.Delete;
 
@@ -11,17 +10,9 @@ public class DeletePostHandler(IRepository<Post> repository)
 {
     public async ValueTask<Result> Handle(DeletePostCommand command, CancellationToken cancellationToken)
     {
-        var postToSoftDelete = await repository.FirstOrDefaultAsync(
-            new PostByIdAndUserSpecification(command.PostId, command.UserId),
-            cancellationToken
-        );
-        if (postToSoftDelete is null)
-        {
-            var postOwnedByAnotherUser = await repository.GetByIdAsync(command.PostId, cancellationToken);
-            return postOwnedByAnotherUser is null
-                ? Result.NotFound("Post not found")
-                : Result.Forbidden("You cannot update this post");
-        }
+        var postToSoftDelete = await repository.GetByIdAsync(command.PostId, cancellationToken);
+        if (postToSoftDelete is null) return Result.NotFound();
+        if (postToSoftDelete.UserId != command.UserId) return Result.Forbidden();
 
         postToSoftDelete.MarkSoftDeleted();
 
