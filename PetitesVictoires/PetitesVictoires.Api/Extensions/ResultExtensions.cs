@@ -5,10 +5,10 @@ namespace PetitesVictoires.Api.Extensions;
 
 public static class ResultExtensions
 {
-  /// <summary>
-  ///     Maps Result to TypedResults for endpoints that return Created, ValidationProblem, or ProblemHttpResult
-  /// </summary>
-  public static Results<Created<TResponse>, ValidationProblem, ProblemHttpResult> ToCreatedResult<TValue, TResponse>(
+    /// <summary>
+    ///     Maps Result to TypedResults for endpoints that return Created, ValidationProblem, or ProblemHttpResult
+    /// </summary>
+    public static Results<Created<TResponse>, ValidationProblem, ProblemHttpResult> ToCreatedResult<TValue, TResponse>(
         this Result<TValue> result,
         Func<TValue, string> locationBuilder,
         Func<TValue, TResponse> mapResponse)
@@ -31,33 +31,33 @@ public static class ResultExtensions
         };
     }
 
-  /// <summary>
-  ///     Maps Result to TypedResults for GetById endpoints that return Ok, NotFound, or ProblemHttpResult
-  /// </summary>
-  public static Results<Ok<TResponse>, NotFound, ProblemHttpResult> ToGetByIdResult<TValue, TResponse>(
+    /// <summary>
+    ///     Maps Result to TypedResults for GetById endpoints that return Ok, NotFound, or ProblemHttpResult
+    /// </summary>
+    public static Results<Ok<TResponse>, NotFound, ProblemHttpResult> ToGetByIdResult<TValue, TResponse>(
         this Result<TValue> result,
         Func<TValue, TResponse> mapResponse)
     {
         return ToOkOrNotFoundResult(result, mapResponse, "Get");
     }
 
-  /// <summary>
-  ///     Maps Result to TypedResults for Update endpoints that return Ok, NotFound, or ProblemHttpResult
-  /// </summary>
-  public static Results<Ok<TResponse>, NotFound, ProblemHttpResult> ToUpdateResult<TValue, TResponse>(
+    /// <summary>
+    ///     Maps Result to TypedResults for Update endpoints that return Ok, NotFound, or ProblemHttpResult
+    /// </summary>
+    public static Results<Ok<TResponse>, NotFound, ProblemHttpResult> ToUpdateResult<TValue, TResponse>(
         this Result<TValue> result,
         Func<TValue, TResponse> mapResponse)
     {
         return ToOkOrNotFoundResult(result, mapResponse, "Update");
     }
 
-  /// <summary>
-  ///     Maps Result to TypedResults for Update endpoints that return Ok, NotFound, Forbid, or ProblemHttpResult
-  /// </summary>
-  public static Results<Ok<TResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>
+    /// <summary>
+    ///     Maps Result to TypedResults for Update endpoints that return Ok, NotFound, Forbid, or ProblemHttpResult
+    /// </summary>
+    public static Results<Ok<TResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>
         ToUpdateResultWithForbidden<TValue, TResponse>(
-        this Result<TValue> result,
-        Func<TValue, TResponse> mapResponse)
+            this Result<TValue> result,
+            Func<TValue, TResponse> mapResponse)
     {
         return result.Status switch
         {
@@ -71,10 +71,10 @@ public static class ResultExtensions
         };
     }
 
-  /// <summary>
-  ///     Maps Result to TypedResults for Delete endpoints that return NoContent, NotFound, or ProblemHttpResult
-  /// </summary>
-  public static Results<NoContent, NotFound, ProblemHttpResult> ToDeleteResult(
+    /// <summary>
+    ///     Maps Result to TypedResults for Delete endpoints that return NoContent, NotFound, or ProblemHttpResult
+    /// </summary>
+    public static Results<NoContent, NotFound, ProblemHttpResult> ToDeleteResult(
         this Result result)
     {
         return result.Status switch
@@ -88,10 +88,28 @@ public static class ResultExtensions
         };
     }
 
-  /// <summary>
-  ///     Private helper method for Ok/NotFound result patterns
-  /// </summary>
-  private static Results<Ok<TResponse>, NotFound, ProblemHttpResult> ToOkOrNotFoundResult<TValue, TResponse>(
+    /// <summary>
+    ///     Maps Result to TypedResults for Delete endpoints that return NoContent, NotFound, Forbid or ProblemHttpResult
+    /// </summary>
+    public static Results<NoContent, NotFound, ForbidHttpResult, ProblemHttpResult> ToDeleteWithForbidResult(
+        this Result result)
+    {
+        return result.Status switch
+        {
+            ResultStatus.Ok => TypedResults.NoContent(),
+            ResultStatus.NotFound => TypedResults.NotFound(),
+            ResultStatus.Forbidden => TypedResults.Forbid(),
+            _ => TypedResults.Problem(
+                title: "Delete failed",
+                detail: string.Join("; ", result.Errors),
+                statusCode: StatusCodes.Status400BadRequest)
+        };
+    }
+
+    /// <summary>
+    ///     Private helper method for Ok/NotFound result patterns
+    /// </summary>
+    private static Results<Ok<TResponse>, NotFound, ProblemHttpResult> ToOkOrNotFoundResult<TValue, TResponse>(
         Result<TValue> result,
         Func<TValue, TResponse> mapResponse,
         string operationName)
@@ -107,10 +125,10 @@ public static class ResultExtensions
         };
     }
 
-  /// <summary>
-  ///     Maps Result to TypedResults for endpoints that return Ok only (like List endpoints)
-  /// </summary>
-  public static Ok<TResponse> ToOkOnlyResult<TValue, TResponse>(
+    /// <summary>
+    ///     Maps Result to TypedResults for endpoints that return Ok only (like List endpoints)
+    /// </summary>
+    public static Ok<TResponse> ToOkOnlyResult<TValue, TResponse>(
         this Result<TValue> result,
         Func<TValue, TResponse> mapResponse)
     {

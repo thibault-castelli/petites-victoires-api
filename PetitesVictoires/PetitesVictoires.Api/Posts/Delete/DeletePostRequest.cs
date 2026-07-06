@@ -1,0 +1,13 @@
+namespace PetitesVictoires.Api.Posts.Delete;
+
+public record DeletePostRequest
+{
+    public const string Route = "/Posts/{PostId}";
+
+    public int PostId { get; init; }
+
+    public static string BuildRoute(int postId)
+    {
+        return Route.Replace("{PostId:int}", postId.ToString());
+    }
+}

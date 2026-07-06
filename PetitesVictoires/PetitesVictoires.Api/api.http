@@ -62,9 +62,11 @@ PUT {{host}}:{{port}}/posts/1
 Content-Type: application/json
 
 {
-  "PostContent": "new content",
-  "UserId": 1
+  "PostContent": "new content"
 }
+
+### Delete post
+DELETE {{host}}:{{port}}/posts/1
 
 ### Create like
 POST {{host}}:{{port}}/likes
