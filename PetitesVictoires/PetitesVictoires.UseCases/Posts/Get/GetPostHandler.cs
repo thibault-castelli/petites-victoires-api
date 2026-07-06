@@ -8,6 +8,7 @@ public class GetPostHandler(IGetPostQueryService queryService) : IQueryHandler<G
     public async ValueTask<Result<PostDto>> Handle(GetPostQuery query, CancellationToken cancellationToken)
     {
         var post = await queryService.GetPostAsync(query.PostId);
+
         return post is null ? Result.NotFound() : Result.Success(post);
     }
 }

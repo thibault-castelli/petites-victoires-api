@@ -4,6 +4,9 @@
 ### GET post
 GET {{host}}:{{port}}/posts/1
 
+### List posts
+GET {{host}}:{{port}}/posts?page=1
+
 ### Create user
 POST {{host}}:{{port}}/users
 Content-Type: application/json

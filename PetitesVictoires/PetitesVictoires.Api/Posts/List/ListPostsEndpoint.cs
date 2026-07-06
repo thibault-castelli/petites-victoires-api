@@ -3,26 +3,26 @@ using Mediator;
 using Microsoft.AspNetCore.Http.HttpResults;
 using PetitesVictoires.Api.Extensions;
 using PetitesVictoires.UseCases;
-using PetitesVictoires.UseCases.Users.List;
+using PetitesVictoires.UseCases.Posts.List;
 
-namespace PetitesVictoires.Api.Users.List;
+namespace PetitesVictoires.Api.Posts.List;
 
-public class ListUsersEndpoint(IMediator mediator)
-    : Endpoint<ListUsersRequest, Results<Ok<ListUsersResponse>, ProblemHttpResult>, ListUsersMapper>
+public class ListPostsEndpoint(IMediator mediator)
+    : Endpoint<ListPostsRequest, Results<Ok<ListPostsResponse>, ProblemHttpResult>, ListPostsMapper>
 {
     public override void Configure()
     {
-        Get(ListUsersRequest.Route);
+        Get(ListPostsRequest.Route);
         AllowAnonymous();
         Summary(s =>
         {
-            s.Summary = "Lists all users matching the specified criteria and by paging";
-            s.ExampleRequest = new ListUsersRequest { Page = 1, CountPerPage = 10 };
-            s.ResponseExamples[200] = new ListUsersResponse(
-                new List<UserRecord>
+            s.Summary = "Lists all posts matching the specified criteria and by paging";
+            s.ExampleRequest = new ListPostsRequest { Page = 1, CountPerPage = 10 };
+            s.ResponseExamples[200] = new ListPostsResponse(
+                new List<PostRecord>
                 {
-                    new(1, "example@mail.com", "example", DateTime.UtcNow),
-                    new(2, "example2@mail.com", "example2", DateTime.UtcNow)
+                    new(1, "lorem ipsum", 1, "example@mail.com", "example", DateTime.UtcNow),
+                    new(2, "example content", 2, "example2@mail.com", "example2", DateTime.UtcNow)
                 }, 1, 10, 2, 1);
             s.Params["page"] = "1-based page index (default 1)";
             s.Params["count_per_page"] =
@@ -32,16 +32,16 @@ public class ListUsersEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
-            .Accepts<ListUsersRequest>()
-            .Produces<ListUsersResponse>(200, "application/json")
+            .Accepts<ListPostsRequest>()
+            .Produces<ListPostsResponse>(200, "application/json")
             .ProducesProblem(400)
         );
     }
 
-    public override async Task<Results<Ok<ListUsersResponse>, ProblemHttpResult>> ExecuteAsync(ListUsersRequest request,
+    public override async Task<Results<Ok<ListPostsResponse>, ProblemHttpResult>> ExecuteAsync(ListPostsRequest request,
         CancellationToken cancellationToken)
     {
-        var query = new ListUsersQuery(request.Page, request.CountPerPage);
+        var query = new ListPostsQuery(request.Page, request.CountPerPage);
         var result = await mediator.Send(query, cancellationToken);
         if (!result.IsSuccess) return TypedResults.Problem(statusCode: 400, detail: string.Join("; ", result.Errors));
 

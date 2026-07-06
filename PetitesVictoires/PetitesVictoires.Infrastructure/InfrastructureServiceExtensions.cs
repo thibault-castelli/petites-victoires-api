@@ -10,6 +10,7 @@ using PetitesVictoires.Infrastructure.Data;
 using PetitesVictoires.Infrastructure.Identity;
 using PetitesVictoires.Infrastructure.Queries;
 using PetitesVictoires.UseCases.Posts.Get;
+using PetitesVictoires.UseCases.Posts.List;
 using PetitesVictoires.UseCases.Users.List;
 
 namespace PetitesVictoires.Infrastructure;
@@ -38,12 +39,16 @@ public static class InfrastructureServiceExtensions
                 .AddEntityFrameworkStores<PetitesVictoiresDbContext>()
                 .AddSignInManager();
 
-            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
+            services
+                .AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
                 .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>))
                 .AddScoped<IUnitOfWork, EfUnitOfWork>()
-                .AddScoped<IIdentityService, IdentityService>()
+                .AddScoped<IIdentityService, IdentityService>();
+
+            services
                 .AddScoped<IListUsersQueryService, ListUsersQueryService>()
-                .AddScoped<IGetPostQueryService, GetPostQueryService>();
+                .AddScoped<IGetPostQueryService, GetPostQueryService>()
+                .AddScoped<IListPostsQueryService, ListPostsQueryService>();
 
             logger.LogInformation("{Project} services registered", "Infrastructure");
 
