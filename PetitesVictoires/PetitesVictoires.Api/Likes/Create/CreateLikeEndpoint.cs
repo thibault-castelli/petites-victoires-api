@@ -20,6 +20,7 @@ public class CreateLikeEndpoint(IMediator mediator)
             s.ExampleRequest = new CreateLikeRequest { PostId = 1 };
             s.ResponseExamples[201] = new LikeRecord(1);
             s.Responses[201] = "Like created successfully";
+            s.Responses[400] = "Invalid input data (validation errors)";
             s.Responses[401] = "Unauthorized, user not signed in";
             s.Responses[404] = "Post to like not found";
             s.Responses[409] = "Post already liked by signed in user";
@@ -29,6 +30,7 @@ public class CreateLikeEndpoint(IMediator mediator)
         Description(b => b
             .Accepts<CreateLikeRequest>("application/json")
             .Produces<LikeRecord>(201, "application/json")
+            .ProducesProblem(400)
             .ProducesProblem(401)
             .ProducesProblem(404)
             .ProducesProblem(409)

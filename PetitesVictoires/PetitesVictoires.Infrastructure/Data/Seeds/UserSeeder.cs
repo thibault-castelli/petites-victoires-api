@@ -6,8 +6,8 @@ namespace PetitesVictoires.Infrastructure.Data.Seeds;
 
 public static class UserSeeder
 {
-    private static readonly UserId UserId1 = UserId.From(1);
-    private static readonly UserId UserId2 = UserId.From(2);
+    public static readonly UserId UserId1 = UserId.From(9998);
+    public static readonly UserId UserId2 = UserId.From(9999);
 
     private static readonly Email Email1 = Email.From("example@mail.com");
     private static readonly Email Email2 = Email.From("johndoe@mail.com");

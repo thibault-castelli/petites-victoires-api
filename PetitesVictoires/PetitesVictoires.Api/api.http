@@ -1,12 +1,6 @@
 @host=https://localhost
 @port=7280
 
-### GET post
-GET {{host}}:{{port}}/posts/1
-
-### List posts
-GET {{host}}:{{port}}/posts?page=1
-
 ### Create user
 POST {{host}}:{{port}}/users
 Content-Type: application/json
@@ -48,6 +42,20 @@ Content-Type: application/json
 
 ### Sign out
 GET {{host}}:{{port}}/users/sign-out
+
+### GET post
+GET {{host}}:{{port}}/posts/1
+
+### List posts
+GET {{host}}:{{port}}/posts?page=1
+
+### Create post
+POST {{host}}:{{port}}/posts
+Content-Type: application/json
+
+{
+  "Content": "Test"
+}
 
 ### Create like
 POST {{host}}:{{port}}/likes
