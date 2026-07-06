@@ -16,7 +16,7 @@ public class CreatePostEndpoint(IMediator mediator)
         Post(CreatePostRequest.Route);
         Summary(s =>
         {
-            s.Summary = "Creates a like on a post";
+            s.Summary = "Creates a post";
             s.ExampleRequest = new CreatePostRequest { Content = "example content" };
             s.ResponseExamples[201] = PostId.From(1);
             s.Responses[201] = "Post created successfully";
