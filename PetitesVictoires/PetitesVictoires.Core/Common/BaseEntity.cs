@@ -17,6 +17,5 @@ public abstract class BaseEntity<TId> : HasDomainEventsBase
     public void MarkSoftDeleted()
     {
         DeletedAt = DateTime.UtcNow;
-        MarkUpdated();
     }
 }
