@@ -22,7 +22,7 @@ public class ListPostsQueryService(PetitesVictoiresDbContext dbContext) : IListP
             .AsNoTracking()
             .ToListAsync();
 
-        var totalEntityCount = await dbContext.Users.CountAsync();
+        var totalEntityCount = await dbContext.Posts.CountAsync();
         var totalPages = (int)Math.Ceiling(totalEntityCount / (double)countPerPage);
         var result = new PagedResult<PostDto>(items, page, countPerPage, totalEntityCount, totalPages);
 
