@@ -29,4 +29,10 @@
         <ProjectReference Include="..\PetitesVictoires.UseCases\PetitesVictoires.UseCases.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Api\Posts\List\"/>
+        <Folder Include="Api\Users\Create\"/>
+        <Folder Include="Api\Users\SignIn\"/>
+    </ItemGroup>
+
 </Project>
