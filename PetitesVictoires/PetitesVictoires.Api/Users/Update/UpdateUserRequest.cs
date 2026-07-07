@@ -1,6 +1,6 @@
 using PetitesVictoires.Api.PreProcessors;
 
-namespace PetitesVictoires.Api.Users.UpdateUser;
+namespace PetitesVictoires.Api.Users.Update;
 
 public record UpdateUserRequest : IOwnedResource
 {

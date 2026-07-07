@@ -1,5 +1,4 @@
 using FastEndpoints;
-using PetitesVictoires.Api.Users.UpdateUser;
 using PetitesVictoires.UseCases.Users;
 
 namespace PetitesVictoires.Api.Users.Update;

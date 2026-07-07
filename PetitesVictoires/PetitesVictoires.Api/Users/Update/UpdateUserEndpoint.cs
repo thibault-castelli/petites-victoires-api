@@ -3,7 +3,6 @@ using Mediator;
 using Microsoft.AspNetCore.Http.HttpResults;
 using PetitesVictoires.Api.Extensions;
 using PetitesVictoires.Api.PreProcessors;
-using PetitesVictoires.Api.Users.UpdateUser;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
 using PetitesVictoires.UseCases.Users.Update;

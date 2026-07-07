@@ -1,6 +1,5 @@
 using FastEndpoints;
 using FluentValidation;
-using PetitesVictoires.Api.Users.UpdateUser;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
 
