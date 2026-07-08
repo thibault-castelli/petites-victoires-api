@@ -9,11 +9,15 @@ var db = builder.AddPostgres("postgres")
     .WithPgAdmin(pgAdmin => { pgAdmin.WithHostPort(5050); })
     .AddDatabase("petitesvictoires");
 
+var mailpit = builder.AddMailPit("mailpit");
+
 var api = builder.AddProject<PetitesVictoires_Api>("api")
     // .WithHttpHealthCheck("/health")
     .WithReference(db)
     .WaitFor(db)
     .WithReference(cache)
-    .WaitFor(cache);
+    .WaitFor(cache)
+    .WithReference(mailpit)
+    .WaitFor(mailpit);
 
 builder.Build().Run();
