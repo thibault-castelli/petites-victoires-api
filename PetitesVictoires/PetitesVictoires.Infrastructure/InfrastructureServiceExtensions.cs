@@ -1,17 +1,8 @@
 using Ardalis.GuardClauses;
-using Ardalis.SharedKernel;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PetitesVictoires.Core.Interfaces;
-using PetitesVictoires.Infrastructure.Data;
-using PetitesVictoires.Infrastructure.Identity;
-using PetitesVictoires.Infrastructure.Queries;
-using PetitesVictoires.UseCases.Posts.Get;
-using PetitesVictoires.UseCases.Posts.List;
-using PetitesVictoires.UseCases.Users.List;
+using PetitesVictoires.Infrastructure.Configuration;
 
 namespace PetitesVictoires.Infrastructure;
 
@@ -24,31 +15,13 @@ public static class InfrastructureServiceExtensions
             var connectionString = config.GetConnectionString("petitesvictoires");
             Guard.Against.Null(connectionString);
 
-            services.AddScoped<EventDispatchInterceptor>();
-            services.AddScoped<IDomainEventDispatcher, MediatorDomainEventDispatcher>();
+            services.AddDatabaseConfiguration(connectionString);
 
-            services.AddDbContext<PetitesVictoiresDbContext>((provider, options) =>
-            {
-                var eventDispatchInterceptor = provider.GetRequiredService<EventDispatchInterceptor>();
-                options.UseNpgsql(connectionString);
-                options.AddInterceptors(eventDispatchInterceptor);
-            });
+            services.AddIdentityServices();
 
-            services
-                .AddIdentityCore<ApplicationUser>()
-                .AddEntityFrameworkStores<PetitesVictoiresDbContext>()
-                .AddSignInManager();
+            services.AddEmailConfiguration(config);
 
-            services
-                .AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
-                .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>))
-                .AddScoped<IUnitOfWork, EfUnitOfWork>()
-                .AddScoped<IIdentityService, IdentityService>();
-
-            services
-                .AddScoped<IListUsersQueryService, ListUsersQueryService>()
-                .AddScoped<IGetPostQueryService, GetPostQueryService>()
-                .AddScoped<IListPostsQueryService, ListPostsQueryService>();
+            services.AddQueryServicesConfiguration();
 
             logger.LogInformation("{Project} services registered", "Infrastructure");
 
