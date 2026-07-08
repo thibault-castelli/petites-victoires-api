@@ -1,5 +1,6 @@
 using Ardalis.SharedKernel;
 using PetitesVictoires.Core.Common;
+using PetitesVictoires.Core.UserAggregate.Events;
 
 namespace PetitesVictoires.Core.UserAggregate;
 
@@ -15,6 +16,8 @@ public class User : BaseEntity<UserId>, IAggregateRoot
         EmailAddress = emailAddress;
         Name = name;
         CreatedAt = DateTime.UtcNow;
+
+        RegisterDomainEvent(new UserCreatedEvent(this));
     }
 
     public Email EmailAddress { get; private set; }

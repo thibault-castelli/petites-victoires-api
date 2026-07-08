@@ -6,8 +6,8 @@ POST {{host}}:{{port}}/users
 Content-Type: application/json
 
 {
-  "EmailAddress": "example@mail.com",
-  "Name": "example",
+  "EmailAddress": "example3@mail.com",
+  "Name": "example3",
   "Password": "Password1!"
 }
 
