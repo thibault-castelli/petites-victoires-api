@@ -1,5 +1,6 @@
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
+using PetitesVictoires.Core.UserAggregate.Events;
 using Shouldly;
 
 namespace PetitesVictoires.UnitTests.Core.UserAggregate;
@@ -35,6 +36,23 @@ public class UserTests
         var user = CreateUser();
 
         user.CreatedAt.ShouldBeInRange(before, DateTime.UtcNow);
+    }
+
+    [Test]
+    public void Constructor_RegistersASingleUserCreatedEvent()
+    {
+        var user = CreateUser();
+
+        user.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<UserCreatedEvent>();
+    }
+
+    [Test]
+    public void Constructor_RaisesUserCreatedEventCarryingTheUserItself()
+    {
+        var user = CreateUser();
+
+        var domainEvent = user.DomainEvents.OfType<UserCreatedEvent>().Single();
+        domainEvent.User.ShouldBeSameAs(user);
     }
 
     [Test]
