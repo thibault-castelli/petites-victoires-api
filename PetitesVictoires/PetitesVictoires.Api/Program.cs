@@ -2,6 +2,7 @@ using PetitesVictoires.Api.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders(); // Drop default Console/Debug
 builder.AddServiceDefaults() // OpenTelemetry logging
     .AddLoggerConfigurations(); // This adds Serilog for console formatting
 
