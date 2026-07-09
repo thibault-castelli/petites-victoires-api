@@ -21,7 +21,7 @@ public class UpdatePostEndpoint(IMediator mediator)
             s.ExampleRequest = new UpdatePostRequest
                 { PostId = 1, PostContent = "new post content" };
             s.ResponseExamples[200] =
-                new PostRecord(1, "new post content", 1, "example@mail.com", "example", DateTime.UtcNow);
+                new PostRecord(1, "new post content", 1, "example@mail.com", "example", 0, DateTime.UtcNow);
             s.Responses[200] = "Post updated successfully";
             s.Responses[400] = "Invalid input data";
             s.Responses[401] = "Unauthorized, user is not signed in";

@@ -21,8 +21,8 @@ public class ListPostsEndpoint(IMediator mediator)
             s.ResponseExamples[200] = new ListPostsResponse(
                 new List<PostRecord>
                 {
-                    new(1, "lorem ipsum", 1, "example@mail.com", "example", DateTime.UtcNow),
-                    new(2, "example content", 2, "example2@mail.com", "example2", DateTime.UtcNow)
+                    new(1, "lorem ipsum", 1, "example@mail.com", "example", 0, DateTime.UtcNow),
+                    new(2, "example content", 2, "example2@mail.com", "example2", 10, DateTime.UtcNow)
                 }, 1, 10, 2, 1);
             s.Params["page"] = "1-based page index (default 1)";
             s.Params["count_per_page"] =

@@ -44,7 +44,7 @@ Content-Type: application/json
 GET {{host}}:{{port}}/users/sign-out
 
 ### GET post
-GET {{host}}:{{port}}/posts/1
+GET {{host}}:{{port}}/posts/2
 
 ### List posts
 GET {{host}}:{{port}}/posts?page=1
@@ -58,7 +58,7 @@ Content-Type: application/json
 }
 
 ### Update post
-PUT {{host}}:{{port}}/posts/1
+PUT {{host}}:{{port}}/posts/2
 Content-Type: application/json
 
 {
@@ -73,7 +73,7 @@ POST {{host}}:{{port}}/likes
 Content-Type: application/json
 
 {
-  "PostId": 1
+  "PostId": 2
 }
 
 ### Delete like

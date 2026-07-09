@@ -18,7 +18,16 @@ public class ListPostsQueryService(PetitesVictoiresDbContext dbContext) : IListP
                 post => post.UserId,
                 user => user.Id,
                 (post, user) =>
-                    new PostDto(post.Id, post.Content, user.Id, user.EmailAddress, user.Name, post.CreatedAt))
+                    new PostDto(
+                        post.Id,
+                        post.Content,
+                        user.Id,
+                        user.EmailAddress,
+                        user.Name,
+                        post.CreatedAt,
+                        dbContext.Likes.Count(l => l.PostId == post.Id)
+                    )
+            )
             .AsNoTracking()
             .ToListAsync();
 

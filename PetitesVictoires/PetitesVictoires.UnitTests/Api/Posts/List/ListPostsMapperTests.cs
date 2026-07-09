@@ -16,7 +16,7 @@ public class ListPostsMapperTests
     {
         var createdAt = DateTime.UtcNow;
         var dto = new PostDto(PostId.From(7), PostContent.From("content"), UserId.From(2),
-            Email.From("user@example.com"), UserName.From("user"), createdAt);
+            Email.From("user@example.com"), UserName.From("user"), createdAt, 1);
         // Distinct paging values so a swapped field would fail.
         var paged = new PagedResult<PostDto>([dto], 2, 20, 41, 3);
 
@@ -28,6 +28,7 @@ public class ListPostsMapperTests
         item.UserId.ShouldBe(2);
         item.UserEmailAddress.ShouldBe("user@example.com");
         item.UserName.ShouldBe("user");
+        item.LikesCount.ShouldBe(1);
         item.CreatedAt.ShouldBe(createdAt);
 
         response.Page.ShouldBe(2);

@@ -13,6 +13,7 @@ public sealed class UpdatePostMapper : Mapper<UpdatePostRequest, PostRecord, Pos
             postEntity.UserId.Value,
             postEntity.UserEmailAddress.Value,
             postEntity.UserName.Value,
+            postEntity.LikesCount,
             postEntity.CreatedAt
         );
     }

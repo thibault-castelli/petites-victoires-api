@@ -2,6 +2,8 @@ using Ardalis.Result;
 using Ardalis.SharedKernel;
 using Mediator;
 using Microsoft.Extensions.Caching.Distributed;
+using PetitesVictoires.Core.LikeAggregate;
+using PetitesVictoires.Core.LikeAggregate.Specifications;
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Core.UserAggregate;
 
@@ -10,6 +12,7 @@ namespace PetitesVictoires.UseCases.Posts.Update;
 public class UpdatePostHandler(
     IRepository<Post> postRepository,
     IReadRepository<User> userRepository,
+    IReadRepository<Like> likeRepository,
     IDistributedCache cache)
     : ICommandHandler<UpdatePostCommand, Result<PostDto>>
 {
@@ -28,7 +31,17 @@ public class UpdatePostHandler(
         await postRepository.UpdateAsync(postToUpdate, cancellationToken);
         await cache.RemoveAsync($"{Constants.PostCachePrefix}{postToUpdate.Id.Value}", cancellationToken);
 
-        return new PostDto(postToUpdate.Id, command.PostContent, user.Id, user.EmailAddress, user.Name,
-            postToUpdate.CreatedAt);
+        var likesCount =
+            await likeRepository.CountAsync(new LikeByPostSpecification(command.PostId), cancellationToken);
+
+        return new PostDto(
+            postToUpdate.Id,
+            command.PostContent,
+            user.Id,
+            user.EmailAddress,
+            user.Name,
+            postToUpdate.CreatedAt,
+            likesCount
+        );
     }
 }

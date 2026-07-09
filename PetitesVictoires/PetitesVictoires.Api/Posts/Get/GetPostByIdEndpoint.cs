@@ -24,6 +24,7 @@ public class GetPostByIdEndpoint(IMediator mediator)
                 1,
                 "example@mail.com",
                 "example",
+                0,
                 DateTime.Now
             );
             s.Responses[200] = "Post found and returned successfully.";

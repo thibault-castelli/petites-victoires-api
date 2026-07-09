@@ -24,6 +24,7 @@ public class CreatePostMapperTests
         record.UserId.ShouldBe(2);
         record.UserEmailAddress.ShouldBe("user@example.com");
         record.UserName.ShouldBe("user");
+        record.LikesCount.ShouldBe(0);
         record.CreatedAt.ShouldBe(createdAt);
     }
 }

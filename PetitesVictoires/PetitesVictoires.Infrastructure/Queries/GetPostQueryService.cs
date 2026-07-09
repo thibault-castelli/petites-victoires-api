@@ -16,7 +16,16 @@ public class GetPostQueryService(PetitesVictoiresDbContext dbContext) : IGetPost
                 post => post.UserId,
                 user => user.Id,
                 (post, user) =>
-                    new PostDto(post.Id, post.Content, user.Id, user.EmailAddress, user.Name, post.CreatedAt))
+                    new PostDto(
+                        post.Id,
+                        post.Content,
+                        user.Id,
+                        user.EmailAddress,
+                        user.Name,
+                        post.CreatedAt,
+                        dbContext.Likes.Count(l => l.PostId == post.Id)
+                    )
+            )
             .AsNoTracking()
             .FirstOrDefaultAsync();
     }

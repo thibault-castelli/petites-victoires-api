@@ -15,7 +15,7 @@ public class UpdatePostMapperTests
     {
         var createdAt = DateTime.UtcNow;
         var dto = new PostDto(PostId.From(1), PostContent.From("content"), UserId.From(2),
-            Email.From("user@example.com"), UserName.From("user"), createdAt);
+            Email.From("user@example.com"), UserName.From("user"), createdAt, 1);
 
         var record = new UpdatePostMapper().FromEntity(dto);
 
@@ -24,6 +24,7 @@ public class UpdatePostMapperTests
         record.UserId.ShouldBe(2);
         record.UserEmailAddress.ShouldBe("user@example.com");
         record.UserName.ShouldBe("user");
+        record.LikesCount.ShouldBe(1);
         record.CreatedAt.ShouldBe(createdAt);
     }
 }

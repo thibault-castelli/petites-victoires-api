@@ -10,5 +10,6 @@ public record PostDto(
     UserId UserId,
     Email UserEmailAddress,
     UserName UserName,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    int LikesCount = 0
 );

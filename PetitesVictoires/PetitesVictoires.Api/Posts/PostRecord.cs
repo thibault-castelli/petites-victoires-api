@@ -6,5 +6,6 @@ public record PostRecord(
     int UserId,
     string UserEmailAddress,
     string UserName,
+    int LikesCount,
     DateTime CreatedAt
 );

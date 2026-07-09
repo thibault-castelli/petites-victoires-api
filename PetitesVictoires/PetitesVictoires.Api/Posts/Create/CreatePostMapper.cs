@@ -13,6 +13,7 @@ public class CreatePostMapper : Mapper<CreatePostRequest, PostRecord, PostDto>
             postEntity.UserId.Value,
             postEntity.UserEmailAddress.Value,
             postEntity.UserName.Value,
+            postEntity.LikesCount,
             postEntity.CreatedAt
         );
     }

@@ -13,6 +13,7 @@ public sealed class GetPostByIdMapper : Mapper<GetPostByIdRequest, PostRecord, P
             postEntity.UserId.Value,
             postEntity.UserEmailAddress.Value,
             postEntity.UserName.Value,
+            postEntity.LikesCount,
             postEntity.CreatedAt
         );
     }

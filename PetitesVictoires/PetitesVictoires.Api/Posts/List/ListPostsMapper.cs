@@ -15,6 +15,7 @@ public sealed class ListPostsMapper : Mapper<ListPostsRequest, ListPostsResponse
                 p.UserId.Value,
                 p.UserEmailAddress.Value,
                 p.UserName.Value,
+                p.LikesCount,
                 p.CreatedAt)
             )
             .ToList();
