@@ -1,6 +1,6 @@
-using Ardalis.SharedKernel;
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Infrastructure;
+using PetitesVictoires.UseCases.Common;
 using PetitesVictoires.UseCases.Posts.Get;
 
 namespace PetitesVictoires.Api.Configurations;
@@ -30,7 +30,8 @@ public static class MediatorConfigurations
                 // Register pipeline behaviors here (order matters)
                 options.PipelineBehaviors =
                 [
-                    typeof(LoggingBehavior<,>)
+                    typeof(LoggingBehavior<,>),
+                    typeof(CachingBehavior<,>)
                 ];
 
                 // If you have stream behaviors:
