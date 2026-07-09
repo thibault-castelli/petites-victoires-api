@@ -81,5 +81,5 @@ DELETE {{host}}:{{port}}/likes
 Content-Type: application/json
 
 {
-  "PostId": 1
+  "PostId": 2
 }

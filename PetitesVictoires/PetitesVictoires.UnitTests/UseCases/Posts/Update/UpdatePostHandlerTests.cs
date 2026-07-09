@@ -49,6 +49,7 @@ public class UpdatePostHandlerTests
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.NotFound);
+        await _postRepository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -59,6 +60,7 @@ public class UpdatePostHandlerTests
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.Forbidden);
+        await _postRepository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -70,6 +72,7 @@ public class UpdatePostHandlerTests
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.NotFound);
+        await _postRepository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -86,6 +89,7 @@ public class UpdatePostHandlerTests
         result.Value.Content.ShouldBe(PostContent.From("updated"));
         result.Value.UserEmailAddress.ShouldBe(Email.From("owner@example.com"));
         post.Content.ShouldBe(PostContent.From("updated"));
+        await _postRepository.Received(1).UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
