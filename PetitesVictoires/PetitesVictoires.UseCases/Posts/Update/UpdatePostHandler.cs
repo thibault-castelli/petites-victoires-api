@@ -1,12 +1,16 @@
 using Ardalis.Result;
 using Ardalis.SharedKernel;
 using Mediator;
+using Microsoft.Extensions.Caching.Distributed;
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.UseCases.Posts.Update;
 
-public class UpdatePostHandler(IRepository<Post> postRepository, IReadRepository<User> userRepository)
+public class UpdatePostHandler(
+    IRepository<Post> postRepository,
+    IReadRepository<User> userRepository,
+    IDistributedCache cache)
     : ICommandHandler<UpdatePostCommand, Result<PostDto>>
 {
     public async ValueTask<Result<PostDto>> Handle(UpdatePostCommand command, CancellationToken cancellationToken)
@@ -22,6 +26,7 @@ public class UpdatePostHandler(IRepository<Post> postRepository, IReadRepository
         postToUpdate.MarkUpdated();
 
         await postRepository.UpdateAsync(postToUpdate, cancellationToken);
+        await cache.RemoveAsync($"{Constants.PostCachePrefix}{postToUpdate.Id.Value}", cancellationToken);
 
         return new PostDto(postToUpdate.Id, command.PostContent, user.Id, user.EmailAddress, user.Name,
             postToUpdate.CreatedAt);

@@ -1,9 +1,11 @@
 using Ardalis.Result;
 using Ardalis.SharedKernel;
+using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Core.UserAggregate;
+using PetitesVictoires.UseCases;
 using PetitesVictoires.UseCases.Posts.Update;
 using Shouldly;
 
@@ -14,6 +16,7 @@ public class UpdatePostHandlerTests
 {
     private IRepository<Post> _postRepository = null!;
     private IReadRepository<User> _userRepository = null!;
+    private IDistributedCache _cache = null!;
     private UpdatePostHandler _handler = null!;
 
     [SetUp]
@@ -21,7 +24,8 @@ public class UpdatePostHandlerTests
     {
         _postRepository = Substitute.For<IRepository<Post>>();
         _userRepository = Substitute.For<IReadRepository<User>>();
-        _handler = new UpdatePostHandler(_postRepository, _userRepository);
+        _cache = Substitute.For<IDistributedCache>();
+        _handler = new UpdatePostHandler(_postRepository, _userRepository, _cache);
     }
 
     private static Post ExistingPost(int ownerId)
@@ -82,5 +86,49 @@ public class UpdatePostHandlerTests
         result.Value.UserEmailAddress.ShouldBe(Email.From("owner@example.com"));
         post.Content.ShouldBe(PostContent.From("updated"));
         await _postRepository.Received(1).UpdateAsync(post, CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_RemovesPostFromCache()
+    {
+        var post = ExistingPost(ownerId: 1);
+        var user = new User(UserId.From(1), Email.From("owner@example.com"), UserName.From("owner"));
+        _postRepository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns(post);
+        _userRepository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns(user);
+
+        await _handler.Handle(Command(userId: 1), CancellationToken.None);
+
+        await _cache.Received(1).RemoveAsync($"{Constants.PostCachePrefix}{post.Id.Value}", CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenPostDoesNotExist_DoesNotRemoveFromCache()
+    {
+        _postRepository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns((Post?)null);
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenPostBelongsToAnotherUser_DoesNotRemoveFromCache()
+    {
+        _postRepository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns(ExistingPost(ownerId: 999));
+
+        await _handler.Handle(Command(userId: 1), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenUserDoesNotExist_DoesNotRemoveFromCache()
+    {
+        _postRepository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns(ExistingPost(ownerId: 1));
+        _userRepository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns((User?)null);
+
+        await _handler.Handle(Command(userId: 1), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 }
