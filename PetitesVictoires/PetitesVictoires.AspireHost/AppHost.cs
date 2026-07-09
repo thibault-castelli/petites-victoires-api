@@ -2,7 +2,8 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var cache = builder.AddRedis("cache");
+var cache = builder.AddRedis("cache")
+    .WithRedisInsight();
 
 var db = builder.AddPostgres("postgres")
     .WithDataVolume()
