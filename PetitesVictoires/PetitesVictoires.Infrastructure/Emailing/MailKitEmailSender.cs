@@ -9,11 +9,11 @@ namespace PetitesVictoires.Infrastructure.Emailing;
 
 public class MailKitEmailSender(ILogger<MailKitEmailSender> logger, IOptions<MailSettings> settings) : IEmailSender
 {
-    public async Task SendEmailAsync(string to, string from, string subject, string body,
+    public async Task SendEmailAsync(string to, string subject, string body,
         CancellationToken cancellationToken = default)
     {
         var message = new MimeMessage();
-        message.From.Add(MailboxAddress.Parse(string.IsNullOrWhiteSpace(from) ? settings.Value.From : from));
+        message.From.Add(InternetAddress.Parse(settings.Value.From));
         message.To.Add(MailboxAddress.Parse(to));
         message.Subject = subject;
         message.Body = new TextPart("plain") { Text = body };

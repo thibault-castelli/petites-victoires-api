@@ -7,8 +7,6 @@ namespace PetitesVictoires.UseCases.Users.Create;
 public class SendWelcomeEmailOnUserCreated(IEmailSender emailSender)
     : INotificationHandler<UserCreatedEvent>
 {
-    private const string FromAddress = "no-reply@petitesvictoires.app";
-
     public async ValueTask Handle(UserCreatedEvent notification, CancellationToken cancellationToken)
     {
         var user = notification.User;
@@ -18,6 +16,6 @@ public class SendWelcomeEmailOnUserCreated(IEmailSender emailSender)
             "Welcome to Petites Victoires — your account has been created.\n\n" +
             "See you soon!";
 
-        await emailSender.SendEmailAsync(user.EmailAddress.Value, FromAddress, subject, body, cancellationToken);
+        await emailSender.SendEmailAsync(user.EmailAddress.Value, subject, body, cancellationToken);
     }
 }

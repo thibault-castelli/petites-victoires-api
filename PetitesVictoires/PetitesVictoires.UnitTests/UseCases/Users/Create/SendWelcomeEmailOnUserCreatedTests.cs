@@ -4,24 +4,21 @@ using PetitesVictoires.Core.Interfaces;
 using PetitesVictoires.Core.UserAggregate;
 using PetitesVictoires.Core.UserAggregate.Events;
 using PetitesVictoires.UseCases.Users.Create;
-using Shouldly;
 
 namespace PetitesVictoires.UnitTests.UseCases.Users.Create;
 
 [TestFixture]
 public class SendWelcomeEmailOnUserCreatedTests
 {
-    private const string ExpectedFrom = "no-reply@petitesvictoires.app";
-
-    private IEmailSender _emailSender = null!;
-    private SendWelcomeEmailOnUserCreated _handler = null!;
-
     [SetUp]
     public void SetUp()
     {
         _emailSender = Substitute.For<IEmailSender>();
         _handler = new SendWelcomeEmailOnUserCreated(_emailSender);
     }
+
+    private IEmailSender _emailSender = null!;
+    private SendWelcomeEmailOnUserCreated _handler = null!;
 
     private static UserCreatedEvent Event(string email = "user@example.com", string name = "Thibault")
     {
@@ -32,11 +29,10 @@ public class SendWelcomeEmailOnUserCreatedTests
     [Test]
     public async Task Handle_SendsExactlyOneEmailToTheUsersAddress()
     {
-        await _handler.Handle(Event(email: "new@example.com"), CancellationToken.None);
+        await _handler.Handle(Event("new@example.com"), CancellationToken.None);
 
         await _emailSender.Received(1).SendEmailAsync(
             "new@example.com",
-            Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
@@ -49,7 +45,6 @@ public class SendWelcomeEmailOnUserCreatedTests
 
         await _emailSender.Received(1).SendEmailAsync(
             Arg.Any<string>(),
-            ExpectedFrom,
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
@@ -61,7 +56,6 @@ public class SendWelcomeEmailOnUserCreatedTests
         await _handler.Handle(Event(), CancellationToken.None);
 
         await _emailSender.Received(1).SendEmailAsync(
-            Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Is<string>(subject => !string.IsNullOrWhiteSpace(subject)),
             Arg.Any<string>(),
@@ -76,7 +70,6 @@ public class SendWelcomeEmailOnUserCreatedTests
         await _emailSender.Received(1).SendEmailAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<string>(),
             Arg.Is<string>(body => body.Contains("Thibault")),
             Arg.Any<CancellationToken>());
     }
@@ -89,7 +82,6 @@ public class SendWelcomeEmailOnUserCreatedTests
         await _handler.Handle(Event(), cts.Token);
 
         await _emailSender.Received(1).SendEmailAsync(
-            Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
