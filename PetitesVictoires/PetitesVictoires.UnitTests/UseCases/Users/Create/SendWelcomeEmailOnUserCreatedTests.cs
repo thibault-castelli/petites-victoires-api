@@ -10,6 +10,8 @@ namespace PetitesVictoires.UnitTests.UseCases.Users.Create;
 [TestFixture]
 public class SendWelcomeEmailOnUserCreatedTests
 {
+    private static readonly UserId CreatedUserId = UserId.From(1);
+
     [SetUp]
     public void SetUp()
     {
@@ -22,17 +24,19 @@ public class SendWelcomeEmailOnUserCreatedTests
 
     private static UserCreatedEvent Event(string email = "user@example.com", string name = "Thibault")
     {
-        var user = new User(UserId.From(1), Email.From(email), UserName.From(name));
+        var user = new User(CreatedUserId, Email.From(email), UserName.From(name));
         return new UserCreatedEvent(user);
     }
 
     [Test]
     public async Task Handle_SendsExactlyOneEmailToTheUsersAddress()
     {
-        await _handler.Handle(Event("new@example.com"), CancellationToken.None);
+        const string recipient = "new@example.com";
+
+        await _handler.Handle(Event(recipient), CancellationToken.None);
 
         await _emailSender.Received(1).SendEmailAsync(
-            "new@example.com",
+            recipient,
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
@@ -65,12 +69,14 @@ public class SendWelcomeEmailOnUserCreatedTests
     [Test]
     public async Task Handle_GreetsTheUserByNameInTheBody()
     {
-        await _handler.Handle(Event(name: "Thibault"), CancellationToken.None);
+        const string name = "Thibault";
+
+        await _handler.Handle(Event(name: name), CancellationToken.None);
 
         await _emailSender.Received(1).SendEmailAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Is<string>(body => body.Contains("Thibault")),
+            Arg.Is<string>(body => body.Contains(name)),
             Arg.Any<CancellationToken>());
     }
 

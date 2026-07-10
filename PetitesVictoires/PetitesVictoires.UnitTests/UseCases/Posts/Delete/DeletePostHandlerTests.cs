@@ -13,6 +13,10 @@ namespace PetitesVictoires.UnitTests.UseCases.Posts.Delete;
 [TestFixture]
 public class DeletePostHandlerTests
 {
+    private static readonly PostId TargetPostId = PostId.From(1);
+    private static readonly UserId RequesterId = UserId.From(1);
+    private static readonly UserId OtherUserId = UserId.From(999);
+
     private IRepository<Post> _repository = null!;
     private IDistributedCache _cache = null!;
     private DeletePostHandler _handler = null!;
@@ -25,66 +29,57 @@ public class DeletePostHandlerTests
         _handler = new DeletePostHandler(_repository, _cache);
     }
 
-    private static Post ExistingPost(int ownerId)
+    private static Post PostOwnedBy(UserId ownerId)
     {
-        return new Post(PostContent.From("content"), UserId.From(ownerId)) { Id = PostId.From(1) };
+        return new Post(PostContent.From("content"), ownerId) { Id = TargetPostId };
     }
 
-    private static DeletePostCommand Command(int userId = 1)
+    private static DeletePostCommand Command()
     {
-        return new DeletePostCommand(PostId.From(1), UserId.From(userId));
+        return new DeletePostCommand(TargetPostId, RequesterId);
+    }
+
+    private void ArrangePostMissing()
+    {
+        _repository.GetByIdAsync(TargetPostId, CancellationToken.None).Returns((Post?)null);
+    }
+
+    private void ArrangePostOwnedByAnotherUser()
+    {
+        _repository.GetByIdAsync(TargetPostId, CancellationToken.None).Returns(PostOwnedBy(OtherUserId));
+    }
+
+    private Post ArrangeValid()
+    {
+        var post = PostOwnedBy(RequesterId);
+        _repository.GetByIdAsync(TargetPostId, CancellationToken.None).Returns(post);
+        return post;
     }
 
     [Test]
     public async Task Handle_WhenPostDoesNotExist_ReturnsNotFound()
     {
-        _repository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns((Post?)null);
+        ArrangePostMissing();
 
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.NotFound);
+    }
+
+    [Test]
+    public async Task Handle_WhenPostDoesNotExist_DoesNotPersist()
+    {
+        ArrangePostMissing();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await _repository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
-    }
-
-    [Test]
-    public async Task Handle_WhenPostBelongsToAnotherUser_ReturnsForbidden()
-    {
-        _repository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns(ExistingPost(ownerId: 999));
-
-        var result = await _handler.Handle(Command(userId: 1), CancellationToken.None);
-
-        result.Status.ShouldBe(ResultStatus.Forbidden);
-        await _repository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
-    }
-
-    [Test]
-    public async Task Handle_WhenValid_SoftDeletesPostAndPersists()
-    {
-        var post = ExistingPost(ownerId: 1);
-        _repository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns(post);
-
-        var result = await _handler.Handle(Command(userId: 1), CancellationToken.None);
-
-        result.IsSuccess.ShouldBeTrue();
-        post.DeletedAt.ShouldNotBeNull();
-        await _repository.Received(1).UpdateAsync(post, CancellationToken.None);
-    }
-
-    [Test]
-    public async Task Handle_WhenValid_RemovesPostFromCache()
-    {
-        var post = ExistingPost(ownerId: 1);
-        _repository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns(post);
-
-        await _handler.Handle(Command(userId: 1), CancellationToken.None);
-
-        await _cache.Received(1).RemoveAsync($"{Constants.PostCachePrefix}{post.Id.Value}", CancellationToken.None);
     }
 
     [Test]
     public async Task Handle_WhenPostDoesNotExist_DoesNotRemoveFromCache()
     {
-        _repository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns((Post?)null);
+        ArrangePostMissing();
 
         await _handler.Handle(Command(), CancellationToken.None);
 
@@ -92,12 +87,73 @@ public class DeletePostHandlerTests
     }
 
     [Test]
+    public async Task Handle_WhenPostBelongsToAnotherUser_ReturnsForbidden()
+    {
+        ArrangePostOwnedByAnotherUser();
+
+        var result = await _handler.Handle(Command(), CancellationToken.None);
+
+        result.Status.ShouldBe(ResultStatus.Forbidden);
+    }
+
+    [Test]
+    public async Task Handle_WhenPostBelongsToAnotherUser_DoesNotPersist()
+    {
+        ArrangePostOwnedByAnotherUser();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _repository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
     public async Task Handle_WhenPostBelongsToAnotherUser_DoesNotRemoveFromCache()
     {
-        _repository.GetByIdAsync(PostId.From(1), CancellationToken.None).Returns(ExistingPost(ownerId: 999));
+        ArrangePostOwnedByAnotherUser();
 
-        await _handler.Handle(Command(userId: 1), CancellationToken.None);
+        await _handler.Handle(Command(), CancellationToken.None);
 
         await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_ReturnsSuccess()
+    {
+        ArrangeValid();
+
+        var result = await _handler.Handle(Command(), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_SoftDeletesThePost()
+    {
+        var post = ArrangeValid();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        post.DeletedAt.ShouldNotBeNull();
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_PersistsThePost()
+    {
+        var post = ArrangeValid();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _repository.Received(1).UpdateAsync(post, CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_RemovesPostFromCache()
+    {
+        ArrangeValid();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.PostCachePrefix}{TargetPostId.Value}", CancellationToken.None);
     }
 }

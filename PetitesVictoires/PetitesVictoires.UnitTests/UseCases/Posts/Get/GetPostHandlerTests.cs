@@ -12,6 +12,8 @@ namespace PetitesVictoires.UnitTests.UseCases.Posts.Get;
 [TestFixture]
 public class GetPostHandlerTests
 {
+    private static readonly PostId TargetPostId = PostId.From(1);
+
     private IGetPostQueryService _queryService = null!;
     private GetPostHandler _handler = null!;
 
@@ -22,12 +24,17 @@ public class GetPostHandlerTests
         _handler = new GetPostHandler(_queryService);
     }
 
+    private static GetPostQuery Query()
+    {
+        return new GetPostQuery(TargetPostId);
+    }
+
     [Test]
     public async Task Handle_WhenPostDoesNotExist_ReturnsNotFound()
     {
-        _queryService.GetPostAsync(PostId.From(1)).Returns((PostDto?)null);
+        _queryService.GetPostAsync(TargetPostId).Returns((PostDto?)null);
 
-        var result = await _handler.Handle(new GetPostQuery(PostId.From(1)), CancellationToken.None);
+        var result = await _handler.Handle(Query(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.NotFound);
     }
@@ -35,11 +42,11 @@ public class GetPostHandlerTests
     [Test]
     public async Task Handle_WhenPostExists_ReturnsItFromTheQueryService()
     {
-        var dto = new PostDto(PostId.From(1), PostContent.From("content"), UserId.From(1),
+        var dto = new PostDto(TargetPostId, PostContent.From("content"), UserId.From(1),
             Email.From("user@example.com"), UserName.From("user"), DateTime.UtcNow);
-        _queryService.GetPostAsync(PostId.From(1)).Returns(dto);
+        _queryService.GetPostAsync(TargetPostId).Returns(dto);
 
-        var result = await _handler.Handle(new GetPostQuery(PostId.From(1)), CancellationToken.None);
+        var result = await _handler.Handle(Query(), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(dto);

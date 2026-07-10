@@ -1,9 +1,11 @@
 using Ardalis.Result;
 using Ardalis.SharedKernel;
+using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.Interfaces;
 using PetitesVictoires.Core.UserAggregate;
+using PetitesVictoires.UseCases;
 using PetitesVictoires.UseCases.Users.Update;
 using Shouldly;
 
@@ -12,10 +14,11 @@ namespace PetitesVictoires.UnitTests.UseCases.Users.Update;
 [TestFixture]
 public class UpdateUserHandlerTests
 {
-    private IRepository<User> _repository = null!;
-    private IIdentityService _identityService = null!;
-    private IUnitOfWork _unitOfWork = null!;
-    private UpdateUserHandler _handler = null!;
+    private static readonly UserId TargetUserId = UserId.From(1);
+    private static readonly Email NewEmail = Email.From("new@example.com");
+    private static readonly UserName NewName = UserName.From("newname");
+    private const string CurrentPassword = "old";
+    private const string NewPassword = "new";
 
     [SetUp]
     public void SetUp()
@@ -23,8 +26,15 @@ public class UpdateUserHandlerTests
         _repository = Substitute.For<IRepository<User>>();
         _identityService = Substitute.For<IIdentityService>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
-        _handler = new UpdateUserHandler(_repository, _identityService, _unitOfWork);
+        _cache = Substitute.For<IDistributedCache>();
+        _handler = new UpdateUserHandler(_repository, _identityService, _unitOfWork, _cache);
     }
+
+    private IRepository<User> _repository = null!;
+    private IIdentityService _identityService = null!;
+    private IUnitOfWork _unitOfWork = null!;
+    private IDistributedCache _cache = null!;
+    private UpdateUserHandler _handler = null!;
 
     private ITransaction ArrangeTransaction()
     {
@@ -35,91 +45,277 @@ public class UpdateUserHandlerTests
 
     private static User ExistingUser()
     {
-        return new User(UserId.From(1), Email.From("old@example.com"), UserName.From("old"));
+        return new User(TargetUserId, Email.From("old@example.com"), UserName.From("old"));
     }
 
     private static UpdateUserCommand Command(string? currentPassword = null, string? newPassword = null)
     {
-        return new UpdateUserCommand(UserId.From(1), Email.From("new@example.com"), UserName.From("newname"),
-            currentPassword, newPassword);
+        return new UpdateUserCommand(TargetUserId, NewEmail, NewName, currentPassword, newPassword);
+    }
+
+    private void ArrangeUserMissing()
+    {
+        _repository.GetByIdAsync(TargetUserId, CancellationToken.None).Returns((User?)null);
+    }
+
+    private void ArrangeIdentityUpdateFailure()
+    {
+        _repository.GetByIdAsync(TargetUserId, CancellationToken.None).Returns(ExistingUser());
+        _identityService.UpdateUserAsync(TargetUserId, NewEmail, NewName).Returns(Result.Error("identity failed"));
+    }
+
+    private void ArrangePasswordChangeFailure()
+    {
+        _repository.GetByIdAsync(TargetUserId, CancellationToken.None).Returns(ExistingUser());
+        _identityService.UpdateUserAsync(TargetUserId, NewEmail, NewName).Returns(Result.Success());
+        _identityService.ChangePasswordAsync(TargetUserId, CurrentPassword, NewPassword)
+            .Returns(Result.Error("wrong password"));
+    }
+
+    private User ArrangeValidWithoutPasswordChange()
+    {
+        var user = ExistingUser();
+        _repository.GetByIdAsync(TargetUserId, CancellationToken.None).Returns(user);
+        _identityService.UpdateUserAsync(TargetUserId, NewEmail, NewName).Returns(Result.Success());
+        return user;
+    }
+
+    private User ArrangeValidWithPasswordChange()
+    {
+        var user = ArrangeValidWithoutPasswordChange();
+        _identityService.ChangePasswordAsync(TargetUserId, CurrentPassword, NewPassword).Returns(Result.Success());
+        return user;
     }
 
     [Test]
     public async Task Handle_WhenUserDoesNotExist_ReturnsNotFound()
     {
-        _repository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns((User?)null);
+        ArrangeUserMissing();
 
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.NotFound);
+    }
+
+    [Test]
+    public async Task Handle_WhenUserDoesNotExist_DoesNotPersist()
+    {
+        ArrangeUserMissing();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await _repository.DidNotReceive().UpdateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
-    public async Task Handle_WhenIdentityUpdateFails_ReturnsErrorWithoutPersistingOrCommitting()
+    public async Task Handle_WhenUserDoesNotExist_DoesNotRemoveFromCache()
     {
-        var transaction = ArrangeTransaction();
-        _repository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns(ExistingUser());
-        _identityService.UpdateUserAsync(UserId.From(1), Email.From("new@example.com"), UserName.From("newname"))
-            .Returns(Result.Error("identity failed"));
+        ArrangeUserMissing();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenIdentityUpdateFails_ReturnsError()
+    {
+        ArrangeTransaction();
+        ArrangeIdentityUpdateFailure();
 
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.Error);
+    }
+
+    [Test]
+    public async Task Handle_WhenIdentityUpdateFails_DoesNotPersist()
+    {
+        ArrangeTransaction();
+        ArrangeIdentityUpdateFailure();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await _repository.DidNotReceive().UpdateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenIdentityUpdateFails_DoesNotCommit()
+    {
+        var transaction = ArrangeTransaction();
+        ArrangeIdentityUpdateFailure();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await transaction.DidNotReceive().CommitAsync(Arg.Any<CancellationToken>());
     }
 
     [Test]
-    public async Task Handle_WhenPasswordChangeFails_ReturnsErrorWithoutPersistingOrCommitting()
+    public async Task Handle_WhenIdentityUpdateFails_DoesNotRemoveFromCache()
     {
-        var transaction = ArrangeTransaction();
-        _repository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns(ExistingUser());
-        _identityService.UpdateUserAsync(UserId.From(1), Email.From("new@example.com"), UserName.From("newname"))
-            .Returns(Result.Success());
-        _identityService.ChangePasswordAsync(UserId.From(1), "old", "new").Returns(Result.Error("wrong password"));
+        ArrangeTransaction();
+        ArrangeIdentityUpdateFailure();
 
-        var result = await _handler.Handle(Command(currentPassword: "old", newPassword: "new"), CancellationToken.None);
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenPasswordChangeFails_ReturnsError()
+    {
+        ArrangeTransaction();
+        ArrangePasswordChangeFailure();
+
+        var result = await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.Error);
+    }
+
+    [Test]
+    public async Task Handle_WhenPasswordChangeFails_DoesNotPersist()
+    {
+        ArrangeTransaction();
+        ArrangePasswordChangeFailure();
+
+        await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
+
         await _repository.DidNotReceive().UpdateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenPasswordChangeFails_DoesNotCommit()
+    {
+        var transaction = ArrangeTransaction();
+        ArrangePasswordChangeFailure();
+
+        await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
+
         await transaction.DidNotReceive().CommitAsync(Arg.Any<CancellationToken>());
     }
 
     [Test]
-    public async Task Handle_WhenValidWithoutPasswordChange_UpdatesUserCommitsAndSkipsPasswordChange()
+    public async Task Handle_WhenPasswordChangeFails_DoesNotRemoveFromCache()
     {
-        var transaction = ArrangeTransaction();
-        var user = ExistingUser();
-        _repository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns(user);
-        _identityService.UpdateUserAsync(UserId.From(1), Email.From("new@example.com"), UserName.From("newname"))
-            .Returns(Result.Success());
+        ArrangeTransaction();
+        ArrangePasswordChangeFailure();
+
+        await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithoutPasswordChange_ReturnsMappedDto()
+    {
+        ArrangeTransaction();
+        ArrangeValidWithoutPasswordChange();
 
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.EmailAddress.ShouldBe(Email.From("new@example.com"));
-        result.Value.Name.ShouldBe(UserName.From("newname"));
-        await _identityService.DidNotReceiveWithAnyArgs().ChangePasswordAsync(UserId.From(1), null!, null!);
+        result.Value.EmailAddress.ShouldBe(NewEmail);
+        result.Value.Name.ShouldBe(NewName);
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithoutPasswordChange_DoesNotChangePassword()
+    {
+        ArrangeTransaction();
+        ArrangeValidWithoutPasswordChange();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _identityService.DidNotReceiveWithAnyArgs().ChangePasswordAsync(TargetUserId, null!, null!);
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithoutPasswordChange_PersistsTheUser()
+    {
+        ArrangeTransaction();
+        var user = ArrangeValidWithoutPasswordChange();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await _repository.Received(1).UpdateAsync(user, CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithoutPasswordChange_CommitsTheTransaction()
+    {
+        var transaction = ArrangeTransaction();
+        ArrangeValidWithoutPasswordChange();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await transaction.Received(1).CommitAsync(CancellationToken.None);
     }
 
     [Test]
-    public async Task Handle_WhenValidWithPasswordChange_ChangesPasswordCommitsAndReturnsDto()
+    public async Task Handle_WhenValidWithoutPasswordChange_RemovesFromCache()
     {
-        var transaction = ArrangeTransaction();
-        var user = ExistingUser();
-        _repository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns(user);
-        _identityService.UpdateUserAsync(UserId.From(1), Email.From("new@example.com"), UserName.From("newname"))
-            .Returns(Result.Success());
-        _identityService.ChangePasswordAsync(UserId.From(1), "old", "new").Returns(Result.Success());
+        ArrangeTransaction();
+        ArrangeValidWithoutPasswordChange();
 
-        var result = await _handler.Handle(Command(currentPassword: "old", newPassword: "new"), CancellationToken.None);
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.UserCachePrefix}{TargetUserId.Value}", Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithPasswordChange_ReturnsSuccess()
+    {
+        ArrangeTransaction();
+        ArrangeValidWithPasswordChange();
+
+        var result = await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
-        await _identityService.Received(1).ChangePasswordAsync(UserId.From(1), "old", "new");
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithPasswordChange_ChangesThePassword()
+    {
+        ArrangeTransaction();
+        ArrangeValidWithPasswordChange();
+
+        await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
+
+        await _identityService.Received(1).ChangePasswordAsync(TargetUserId, CurrentPassword, NewPassword);
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithPasswordChange_PersistsTheUser()
+    {
+        ArrangeTransaction();
+        var user = ArrangeValidWithPasswordChange();
+
+        await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
+
         await _repository.Received(1).UpdateAsync(user, CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithPasswordChange_CommitsTheTransaction()
+    {
+        var transaction = ArrangeTransaction();
+        ArrangeValidWithPasswordChange();
+
+        await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
+
         await transaction.Received(1).CommitAsync(CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenValidWithPasswordChange_RemovesFromCache()
+    {
+        ArrangeTransaction();
+        ArrangeValidWithPasswordChange();
+
+        await _handler.Handle(Command(CurrentPassword, NewPassword), CancellationToken.None);
+
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.UserCachePrefix}{TargetUserId.Value}", Arg.Any<CancellationToken>());
     }
 }

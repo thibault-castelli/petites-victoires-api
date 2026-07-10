@@ -9,6 +9,9 @@ namespace PetitesVictoires.UnitTests.UseCases.Posts.List;
 [TestFixture]
 public class ListPostsHandlerTests
 {
+    private const int RequestedPage = 2;
+    private const int RequestedCountPerPage = 5;
+
     private IListPostsQueryService _queryService = null!;
     private ListPostsHandler _handler = null!;
 
@@ -25,16 +28,27 @@ public class ListPostsHandlerTests
     }
 
     [Test]
-    public async Task Handle_PassesRequestedPagingToTheQueryServiceAndReturnsItsResult()
+    public async Task Handle_ReturnsTheResultFromTheQueryService()
     {
-        var paged = EmptyPage(2, 5);
-        _queryService.ListAsync(2, 5).Returns(paged);
+        var paged = EmptyPage(RequestedPage, RequestedCountPerPage);
+        _queryService.ListAsync(RequestedPage, RequestedCountPerPage).Returns(paged);
 
-        var result = await _handler.Handle(new ListPostsQuery(2, 5), CancellationToken.None);
+        var result = await _handler.Handle(new ListPostsQuery(RequestedPage, RequestedCountPerPage),
+            CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(paged);
-        await _queryService.Received(1).ListAsync(2, 5);
+    }
+
+    [Test]
+    public async Task Handle_PassesRequestedPagingToTheQueryService()
+    {
+        _queryService.ListAsync(RequestedPage, RequestedCountPerPage)
+            .Returns(EmptyPage(RequestedPage, RequestedCountPerPage));
+
+        await _handler.Handle(new ListPostsQuery(RequestedPage, RequestedCountPerPage), CancellationToken.None);
+
+        await _queryService.Received(1).ListAsync(RequestedPage, RequestedCountPerPage);
     }
 
     [Test]

@@ -11,6 +11,12 @@ namespace PetitesVictoires.UnitTests.UseCases.Posts.Create;
 [TestFixture]
 public class CreatePostHandlerTests
 {
+    private static readonly UserId AuthorId = UserId.From(1);
+    private static readonly PostId SavedPostId = PostId.From(10);
+    private static readonly PostContent Content = PostContent.From("hello");
+    private static readonly Email AuthorEmail = Email.From("author@example.com");
+    private static readonly UserName AuthorName = UserName.From("author");
+
     private IRepository<Post> _postRepository = null!;
     private IReadRepository<User> _userRepository = null!;
     private CreatePostHandler _handler = null!;
@@ -23,24 +29,42 @@ public class CreatePostHandlerTests
         _handler = new CreatePostHandler(_postRepository, _userRepository);
     }
 
-    [Test]
-    public async Task Handle_PersistsPostAndReturnsDtoMappedFromSavedPostAndAuthor()
+    private static CreatePostCommand Command()
     {
-        var savedPost = new Post(PostContent.From("hello"), UserId.From(1)) { Id = PostId.From(10) };
-        var author = new User(UserId.From(1), Email.From("author@example.com"), UserName.From("author"));
-        _postRepository.AddAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>()).Returns(savedPost);
-        _userRepository.GetByIdAsync(UserId.From(1), CancellationToken.None).Returns(author);
+        return new CreatePostCommand(Content, AuthorId);
+    }
 
-        var command = new CreatePostCommand(PostContent.From("hello"), UserId.From(1));
-        var result = await _handler.Handle(command, CancellationToken.None);
+    private void ArrangeValid()
+    {
+        var savedPost = new Post(Content, AuthorId) { Id = SavedPostId };
+        var author = new User(AuthorId, AuthorEmail, AuthorName);
+        _postRepository.AddAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>()).Returns(savedPost);
+        _userRepository.GetByIdAsync(AuthorId, CancellationToken.None).Returns(author);
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_ReturnsDtoMappedFromSavedPostAndAuthor()
+    {
+        ArrangeValid();
+
+        var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Id.ShouldBe(PostId.From(10));
-        result.Value.Content.ShouldBe(PostContent.From("hello"));
-        result.Value.UserEmailAddress.ShouldBe(Email.From("author@example.com"));
-        result.Value.UserName.ShouldBe(UserName.From("author"));
+        result.Value.Id.ShouldBe(SavedPostId);
+        result.Value.Content.ShouldBe(Content);
+        result.Value.UserEmailAddress.ShouldBe(AuthorEmail);
+        result.Value.UserName.ShouldBe(AuthorName);
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_PersistsThePost()
+    {
+        ArrangeValid();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await _postRepository.Received(1).AddAsync(
-            Arg.Is<Post>(p => p.Content == PostContent.From("hello") && p.UserId == UserId.From(1)),
+            Arg.Is<Post>(p => p.Content == Content && p.UserId == AuthorId),
             Arg.Any<CancellationToken>());
     }
 }

@@ -10,6 +10,10 @@ namespace PetitesVictoires.UnitTests.UseCases.Users.SignIn;
 [TestFixture]
 public class SignInHandlerTests
 {
+    private const string EmailAddress = "user@example.com";
+    private const string Password = "password";
+    private static readonly Email UserEmail = Email.From(EmailAddress);
+
     private IIdentityService _identityService = null!;
     private SignInHandler _handler = null!;
 
@@ -22,14 +26,14 @@ public class SignInHandlerTests
 
     private static SignInCommand Command()
     {
-        return new SignInCommand(Email.From("user@example.com"), "password");
+        return new SignInCommand(UserEmail, Password);
     }
 
     [Test]
     public async Task Handle_WhenCredentialsValid_ReturnsAuthenticatedUserFromIdentity()
     {
-        var authenticated = new AuthenticatedUser(1, "user", "user@example.com");
-        _identityService.ValidateCredentialsAsync(Email.From("user@example.com"), "password", CancellationToken.None)
+        var authenticated = new AuthenticatedUser(1, "user", EmailAddress);
+        _identityService.ValidateCredentialsAsync(UserEmail, Password, CancellationToken.None)
             .Returns(Result.Success(authenticated));
 
         var result = await _handler.Handle(Command(), CancellationToken.None);
@@ -41,7 +45,7 @@ public class SignInHandlerTests
     [Test]
     public async Task Handle_WhenCredentialsInvalid_ReturnsUnauthorizedFromIdentity()
     {
-        _identityService.ValidateCredentialsAsync(Email.From("user@example.com"), "password", CancellationToken.None)
+        _identityService.ValidateCredentialsAsync(UserEmail, Password, CancellationToken.None)
             .Returns(Result<AuthenticatedUser>.Unauthorized());
 
         var result = await _handler.Handle(Command(), CancellationToken.None);

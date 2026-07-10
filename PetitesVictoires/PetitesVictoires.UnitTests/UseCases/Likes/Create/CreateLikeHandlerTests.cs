@@ -15,6 +15,10 @@ namespace PetitesVictoires.UnitTests.UseCases.Likes.Create;
 [TestFixture]
 public class CreateLikeHandlerTests
 {
+    private static readonly UserId LikerId = UserId.From(1);
+    private static readonly PostId TargetPostId = PostId.From(2);
+    private static readonly UserId PostAuthorId = UserId.From(9);
+
     [SetUp]
     public void SetUp()
     {
@@ -31,89 +35,123 @@ public class CreateLikeHandlerTests
 
     private static CreateLikeCommand Command()
     {
-        return new CreateLikeCommand(UserId.From(1), PostId.From(2));
+        return new CreateLikeCommand(LikerId, TargetPostId);
     }
 
     private static Post ExistingPost()
     {
-        return new Post(PostContent.From("content"), UserId.From(9)) { Id = PostId.From(2) };
+        return new Post(PostContent.From("content"), PostAuthorId) { Id = TargetPostId };
+    }
+
+    private void ArrangePostMissing()
+    {
+        _postRepository.GetByIdAsync(TargetPostId, CancellationToken.None).Returns((Post?)null);
+    }
+
+    private void ArrangeExistingLike()
+    {
+        _postRepository.GetByIdAsync(TargetPostId, CancellationToken.None).Returns(ExistingPost());
+        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
+            .Returns(new Like(LikerId, TargetPostId));
+    }
+
+    private void ArrangeValid()
+    {
+        _postRepository.GetByIdAsync(TargetPostId, CancellationToken.None).Returns(ExistingPost());
+        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
+            .Returns((Like?)null);
     }
 
     [Test]
     public async Task Handle_WhenPostDoesNotExist_ReturnsNotFound()
     {
-        _postRepository.GetByIdAsync(PostId.From(2), CancellationToken.None).Returns((Post?)null);
+        ArrangePostMissing();
 
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.NotFound);
+    }
+
+    [Test]
+    public async Task Handle_WhenPostDoesNotExist_DoesNotAddLike()
+    {
+        ArrangePostMissing();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await _likeRepository.DidNotReceive().AddAsync(Arg.Any<Like>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenPostDoesNotExist_DoesNotRemovePostCache()
+    {
+        ArrangePostMissing();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
     public async Task Handle_WhenLikeAlreadyExists_ReturnsConflict()
     {
-        var postId = PostId.From(2);
-        _postRepository.GetByIdAsync(postId, CancellationToken.None).Returns(ExistingPost());
-        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
-            .Returns(new Like(UserId.From(1), postId));
+        ArrangeExistingLike();
 
         var result = await _handler.Handle(Command(), CancellationToken.None);
 
         result.Status.ShouldBe(ResultStatus.Conflict);
+    }
+
+    [Test]
+    public async Task Handle_WhenLikeAlreadyExists_DoesNotAddLike()
+    {
+        ArrangeExistingLike();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
         await _likeRepository.DidNotReceive().AddAsync(Arg.Any<Like>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenLikeAlreadyExists_DoesNotRemovePostCache()
+    {
+        ArrangeExistingLike();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_ReturnsSuccess()
+    {
+        ArrangeValid();
+
+        var result = await _handler.Handle(Command(), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
     }
 
     [Test]
     public async Task Handle_WhenValid_AddsTheLike()
     {
-        var postId = PostId.From(2);
-        _postRepository.GetByIdAsync(postId, CancellationToken.None).Returns(ExistingPost());
-        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
-            .Returns((Like?)null);
+        ArrangeValid();
 
-        var result = await _handler.Handle(Command(), CancellationToken.None);
+        await _handler.Handle(Command(), CancellationToken.None);
 
-        result.IsSuccess.ShouldBeTrue();
         await _likeRepository.Received(1).AddAsync(
-            Arg.Is<Like>(l => l.UserId == UserId.From(1) && l.PostId == postId),
+            Arg.Is<Like>(l => l.UserId == LikerId && l.PostId == TargetPostId),
             Arg.Any<CancellationToken>());
     }
 
     [Test]
     public async Task Handle_WhenValid_RemovesPostCache()
     {
-        var postId = PostId.From(2);
-        _postRepository.GetByIdAsync(postId, CancellationToken.None).Returns(ExistingPost());
-        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
-            .Returns((Like?)null);
+        ArrangeValid();
 
         await _handler.Handle(Command(), CancellationToken.None);
 
-        await _cache.Received(1).RemoveAsync($"{Constants.PostCachePrefix}{postId.Value}", CancellationToken.None);
-    }
-
-    [Test]
-    public async Task Handle_WhenPostDoesNotExist_DoesNotRemovesPostCache()
-    {
-        var postId = PostId.From(2);
-        _postRepository.GetByIdAsync(postId, CancellationToken.None).Returns((Post?)null);
-
-        await _handler.Handle(Command(), CancellationToken.None);
-
-        await _cache.DidNotReceive().RemoveAsync($"{Constants.PostCachePrefix}{postId.Value}", CancellationToken.None);
-    }
-
-    [Test]
-    public async Task Handle_WhenLikeAlreadyExists_DoesNotRemovesPostCache()
-    {
-        var postId = PostId.From(2);
-        _postRepository.GetByIdAsync(postId, CancellationToken.None).Returns(ExistingPost());
-        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
-            .Returns(new Like(UserId.From(1), postId));
-
-        await _handler.Handle(Command(), CancellationToken.None);
-
-        await _cache.DidNotReceive().RemoveAsync($"{Constants.PostCachePrefix}{postId.Value}", CancellationToken.None);
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.PostCachePrefix}{TargetPostId.Value}", CancellationToken.None);
     }
 }
