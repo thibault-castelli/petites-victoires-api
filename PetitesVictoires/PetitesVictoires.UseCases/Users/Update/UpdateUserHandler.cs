@@ -1,12 +1,17 @@
 using Ardalis.Result;
 using Ardalis.SharedKernel;
 using Mediator;
+using Microsoft.Extensions.Caching.Distributed;
 using PetitesVictoires.Core.Interfaces;
 using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.UseCases.Users.Update;
 
-public class UpdateUserHandler(IRepository<User> repository, IIdentityService identityService, IUnitOfWork unitOfWork)
+public class UpdateUserHandler(
+    IRepository<User> repository,
+    IIdentityService identityService,
+    IUnitOfWork unitOfWork,
+    IDistributedCache cache)
     : ICommandHandler<UpdateUserCommand, Result<UserDto>>
 {
     public async ValueTask<Result<UserDto>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
@@ -36,6 +41,8 @@ public class UpdateUserHandler(IRepository<User> repository, IIdentityService id
         await repository.UpdateAsync(existingUser, cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
+        await cache.RemoveAsync($"{Constants.UserCachePrefix}{existingUser.Id}", cancellationToken);
+
         return new UserDto(existingUser.Id, existingUser.EmailAddress, existingUser.Name, existingUser.CreatedAt);
     }
 }

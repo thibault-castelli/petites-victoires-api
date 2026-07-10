@@ -6,4 +6,5 @@ public static class Constants
     public const int MaxPageSize = 100;
 
     public const string PostCachePrefix = "post:";
+    public const string UserCachePrefix = "user:";
 }

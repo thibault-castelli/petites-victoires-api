@@ -1,12 +1,17 @@
 using Ardalis.Result;
 using Ardalis.SharedKernel;
 using Mediator;
+using Microsoft.Extensions.Caching.Distributed;
 using PetitesVictoires.Core.Interfaces;
 using PetitesVictoires.Core.UserAggregate;
 
 namespace PetitesVictoires.UseCases.Users.Delete;
 
-public class DeleteUserHandler(IRepository<User> repository, IIdentityService identityService, IUnitOfWork unitOfWork)
+public class DeleteUserHandler(
+    IRepository<User> repository,
+    IIdentityService identityService,
+    IUnitOfWork unitOfWork,
+    IDistributedCache cache)
     : ICommandHandler<DeleteUserCommand, Result>
 {
     public async ValueTask<Result> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
@@ -22,6 +27,8 @@ public class DeleteUserHandler(IRepository<User> repository, IIdentityService id
         await repository.DeleteAsync(userToDelete, cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
+        await cache.RemoveAsync($"{Constants.UserCachePrefix}{userToDelete.Id}", cancellationToken);
+
         return Result.Success();
     }
 }
