@@ -7,4 +7,5 @@ public static class Constants
 
     public const string PostCachePrefix = "post:";
     public const string UserCachePrefix = "user:";
+    public const string UserLikeStatsCachePrefix = "like-stats:";
 }

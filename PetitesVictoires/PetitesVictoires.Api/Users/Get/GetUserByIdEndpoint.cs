@@ -20,8 +20,8 @@ public class GetUserByIdEndpoint(IMediator mediator)
             s.ExampleRequest =
                 new GetUserByIdRequest { UserId = 1 };
             s.ResponseExamples[200] = new UserRecord(1, "example@mail.com", "example", DateTime.Now);
-            s.Responses[200] = "Post found and returned successfully.";
-            s.Responses[404] = "Post with specified ID could not be found.";
+            s.Responses[200] = "User found and returned successfully.";
+            s.Responses[404] = "User with specified ID could not be found.";
         });
         Tags("Users");
         Description(b => b

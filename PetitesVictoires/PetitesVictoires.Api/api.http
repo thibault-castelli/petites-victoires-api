@@ -28,6 +28,9 @@ DELETE {{host}}:{{port}}/users/1
 ### Get user
 GET {{host}}:{{port}}/users/1
 
+### Get user like stats
+GET {{host}}:{{port}}/users/1/like-stats
+
 ### List users
 GET {{host}}:{{port}}/users?page=1
 
@@ -36,8 +39,8 @@ POST {{host}}:{{port}}/users/sign-in
 Content-Type: application/json
 
 {
-  "EmailAddress": "example@mail.com",
-  "Password": "Password1!"
+  "EmailAddress": "new-example@mail.com",
+  "Password": "Password2?"
 }
 
 ### Sign out

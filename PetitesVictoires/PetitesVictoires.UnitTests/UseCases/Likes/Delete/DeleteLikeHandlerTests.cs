@@ -15,18 +15,21 @@ namespace PetitesVictoires.UnitTests.UseCases.Likes.Delete;
 [TestFixture]
 public class DeleteLikeHandlerTests
 {
-    private static readonly UserId LikerId = UserId.From(1);
-    private static readonly PostId TargetPostId = PostId.From(2);
-
     [SetUp]
     public void SetUp()
     {
-        _repository = Substitute.For<IRepository<Like>>();
+        _likeRepository = Substitute.For<IRepository<Like>>();
+        _postRepository = Substitute.For<IReadRepository<Post>>();
         _cache = Substitute.For<IDistributedCache>();
-        _handler = new DeleteLikeHandler(_repository, _cache);
+        _handler = new DeleteLikeHandler(_likeRepository, _postRepository, _cache);
     }
 
-    private IRepository<Like> _repository = null!;
+    private static readonly UserId LikerId = UserId.From(1);
+    private static readonly PostId TargetPostId = PostId.From(2);
+    private static readonly UserId PostAuthorId = UserId.From(9);
+
+    private IRepository<Like> _likeRepository = null!;
+    private IReadRepository<Post> _postRepository = null!;
     private IDistributedCache _cache = null!;
     private DeleteLikeHandler _handler = null!;
 
@@ -37,15 +40,21 @@ public class DeleteLikeHandlerTests
 
     private void ArrangeLikeMissing()
     {
-        _repository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
+        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
             .Returns((Like?)null);
+    }
+
+    private static Post ExistingPost()
+    {
+        return new Post(PostContent.From("content"), PostAuthorId) { Id = TargetPostId };
     }
 
     private Like ArrangeExistingLike()
     {
         var like = new Like(LikerId, TargetPostId);
-        _repository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
+        _likeRepository.FirstOrDefaultAsync(Arg.Any<ISpecification<Like>>(), Arg.Any<CancellationToken>())
             .Returns(like);
+        _postRepository.GetByIdAsync(TargetPostId, CancellationToken.None).Returns(ExistingPost());
         return like;
     }
 
@@ -66,7 +75,7 @@ public class DeleteLikeHandlerTests
 
         await _handler.Handle(Command(), CancellationToken.None);
 
-        await _repository.DidNotReceive().DeleteAsync(Arg.Any<Like>(), Arg.Any<CancellationToken>());
+        await _likeRepository.DidNotReceive().DeleteAsync(Arg.Any<Like>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -96,7 +105,7 @@ public class DeleteLikeHandlerTests
 
         await _handler.Handle(Command(), CancellationToken.None);
 
-        await _repository.Received(1).DeleteAsync(like, Arg.Any<CancellationToken>());
+        await _likeRepository.Received(1).DeleteAsync(like, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -108,5 +117,27 @@ public class DeleteLikeHandlerTests
 
         await _cache.Received(1)
             .RemoveAsync($"{Constants.PostCachePrefix}{TargetPostId.Value}", CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenLikeExists_RemovesLikerLikeStatsCache()
+    {
+        ArrangeExistingLike();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.UserLikeStatsCachePrefix}{LikerId}", CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenLikeExists_RemovesPostAuthorLikeStatsCache()
+    {
+        ArrangeExistingLike();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.UserLikeStatsCachePrefix}{PostAuthorId}", CancellationToken.None);
     }
 }

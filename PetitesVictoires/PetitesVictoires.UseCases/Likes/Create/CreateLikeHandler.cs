@@ -29,6 +29,8 @@ public class CreateLikeHandler(
         await likesRepository.AddAsync(newLike, cancellationToken);
 
         await cache.RemoveAsync($"{Constants.PostCachePrefix}{post.Id.Value}", cancellationToken);
+        await cache.RemoveAsync($"{Constants.UserLikeStatsCachePrefix}{command.UserId}", cancellationToken);
+        await cache.RemoveAsync($"{Constants.UserLikeStatsCachePrefix}{post.UserId}", cancellationToken);
 
         return newLike.Id;
     }

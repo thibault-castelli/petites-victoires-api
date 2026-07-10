@@ -154,4 +154,26 @@ public class CreateLikeHandlerTests
         await _cache.Received(1)
             .RemoveAsync($"{Constants.PostCachePrefix}{TargetPostId.Value}", CancellationToken.None);
     }
+
+    [Test]
+    public async Task Handle_WhenValid_RemovesLikerLikeStatsCache()
+    {
+        ArrangeValid();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.UserLikeStatsCachePrefix}{LikerId}", CancellationToken.None);
+    }
+
+    [Test]
+    public async Task Handle_WhenValid_RemovesPostAuthorLikeStatsCache()
+    {
+        ArrangeValid();
+
+        await _handler.Handle(Command(), CancellationToken.None);
+
+        await _cache.Received(1)
+            .RemoveAsync($"{Constants.UserLikeStatsCachePrefix}{PostAuthorId}", CancellationToken.None);
+    }
 }
