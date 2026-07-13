@@ -4,7 +4,7 @@ using Mediator;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
-namespace PetitesVictoires.UseCases.Common;
+namespace PetitesVictoires.UseCases.Behaviors;
 
 public class CachingBehavior<TMessage, TResponse>(
     IDistributedCache cache,

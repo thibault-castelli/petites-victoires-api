@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using PetitesVictoires.Core.PostAggregate;
-using PetitesVictoires.UseCases.Common;
+using PetitesVictoires.UseCases.Behaviors;
 
 namespace PetitesVictoires.UseCases.Posts.Get;
 

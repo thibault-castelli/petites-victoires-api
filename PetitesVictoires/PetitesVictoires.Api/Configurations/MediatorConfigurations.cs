@@ -1,6 +1,6 @@
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Infrastructure;
-using PetitesVictoires.UseCases.Common;
+using PetitesVictoires.UseCases.Behaviors;
 using PetitesVictoires.UseCases.Posts.Get;
 
 namespace PetitesVictoires.Api.Configurations;

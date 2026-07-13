@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using PetitesVictoires.Core.UserAggregate;
-using PetitesVictoires.UseCases.Common;
+using PetitesVictoires.UseCases.Behaviors;
 
 namespace PetitesVictoires.UseCases.Users.Get;
 

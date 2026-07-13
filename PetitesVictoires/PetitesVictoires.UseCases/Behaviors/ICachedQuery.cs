@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace PetitesVictoires.UseCases.Common;
+namespace PetitesVictoires.UseCases.Behaviors;
 
 public interface ICachedQuery
 {

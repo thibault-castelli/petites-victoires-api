@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
-namespace PetitesVictoires.UseCases.Common;
+namespace PetitesVictoires.UseCases.Behaviors;
 
 public class LoggingBehavior<TMessage, TResponse>(ILogger<LoggingBehavior<TMessage, TResponse>> logger)
     : IPipelineBehavior<TMessage, TResponse>

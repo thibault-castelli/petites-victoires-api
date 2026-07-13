@@ -5,21 +5,14 @@ using Mediator;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using PetitesVictoires.UseCases.Common;
+using PetitesVictoires.UseCases.Behaviors;
 using Shouldly;
 
-namespace PetitesVictoires.UnitTests.UseCases.Common;
+namespace PetitesVictoires.UnitTests.UseCases.Behaviors;
 
 [TestFixture]
 public class CachingBehaviorTests
 {
-    private const string TestCacheKey = "test-cache-key";
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(5);
-
-    private IDistributedCache _cache = null!;
-    private CachingBehavior<TestCachedQuery, Result<TestDto>> _behavior = null!;
-    private int _nextCallCount;
-
     [SetUp]
     public void SetUp()
     {
@@ -30,6 +23,13 @@ public class CachingBehaviorTests
         _behavior = new CachingBehavior<TestCachedQuery, Result<TestDto>>(_cache, logger);
         _nextCallCount = 0;
     }
+
+    private const string TestCacheKey = "test-cache-key";
+    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(5);
+
+    private IDistributedCache _cache = null!;
+    private CachingBehavior<TestCachedQuery, Result<TestDto>> _behavior = null!;
+    private int _nextCallCount;
 
     private static TestCachedQuery Query(TimeSpan? timeout = null)
     {
