@@ -9,7 +9,11 @@ public class ListPostsHandler(IListPostsQueryService queryService)
     public async ValueTask<Result<PagedResult<PostDto>>> Handle(ListPostsQuery query,
         CancellationToken cancellationToken)
     {
-        var result = await queryService.ListAsync(query.Page ?? 1, query.CountPerPage ?? Constants.DefaultPageSize);
+        var result = await queryService.ListAsync(
+            query.ListQueryParams,
+            query.ListPostsCriteria,
+            cancellationToken
+        );
 
         return result;
     }

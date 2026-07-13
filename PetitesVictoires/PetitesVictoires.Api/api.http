@@ -50,7 +50,7 @@ GET {{host}}:{{port}}/users/sign-out
 GET {{host}}:{{port}}/posts/2
 
 ### List posts
-GET {{host}}:{{port}}/posts?page=1
+GET {{host}}:{{port}}/posts?page=1&count_per_page=2
 
 ### Create post
 POST {{host}}:{{port}}/posts

@@ -4,6 +4,7 @@ using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Core.UserAggregate;
 using PetitesVictoires.UseCases;
 using PetitesVictoires.UseCases.Posts;
+using PetitesVictoires.UseCases.Posts.List;
 using Shouldly;
 
 namespace PetitesVictoires.UnitTests.Api.Posts.List;
@@ -35,5 +36,51 @@ public class ListPostsMapperTests
         response.CountPerPage.ShouldBe(20);
         response.TotalEntityCount.ShouldBe(41);
         response.TotalPages.ShouldBe(3);
+    }
+
+    [Test]
+    public void ToQuery_MapsPagingIntoQueryParams()
+    {
+        var request = new ListPostsRequest { Page = 3, CountPerPage = 25 };
+
+        var query = new ListPostsMapper().ToQuery(request);
+
+        query.ListQueryParams.Page.ShouldBe(3);
+        query.ListQueryParams.CountPerPage.ShouldBe(25);
+    }
+
+    [TestCase("created_at", PostSortBy.CreatedAt)]
+    [TestCase("likes_count", PostSortBy.LikesCount)]
+    [TestCase(null, PostSortBy.CreatedAt)]
+    [TestCase("unknown", PostSortBy.CreatedAt)]
+    public void ToQuery_MapsSortByStringToEnum(string? sortBy, PostSortBy expected)
+    {
+        var request = new ListPostsRequest { SortBy = sortBy };
+
+        var query = new ListPostsMapper().ToQuery(request);
+
+        query.ListPostsCriteria.SortBy.ShouldBe(expected);
+    }
+
+    [Test]
+    public void ToQuery_MapsUserIdFilters()
+    {
+        var request = new ListPostsRequest { LikedBy = 4, CreatedBy = 9 };
+
+        var query = new ListPostsMapper().ToQuery(request);
+
+        query.ListPostsCriteria.LikedBy.ShouldBe(UserId.From(4));
+        query.ListPostsCriteria.CreatedBy.ShouldBe(UserId.From(9));
+    }
+
+    [Test]
+    public void ToQuery_WhenFiltersAreNull_LeavesThemNull()
+    {
+        var request = new ListPostsRequest { LikedBy = null, CreatedBy = null };
+
+        var query = new ListPostsMapper().ToQuery(request);
+
+        query.ListPostsCriteria.LikedBy.ShouldBeNull();
+        query.ListPostsCriteria.CreatedBy.ShouldBeNull();
     }
 }

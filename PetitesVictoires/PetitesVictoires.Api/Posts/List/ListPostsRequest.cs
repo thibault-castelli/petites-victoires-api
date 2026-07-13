@@ -7,9 +7,13 @@ public record ListPostsRequest
 {
     public const string Route = "/Posts";
 
-    // Bind to ?page=
     [BindFrom("page")] public int Page { get; init; } = 1;
 
-    // Bind to ?count_per_page=
     [BindFrom("count_per_page")] public int CountPerPage { get; init; } = Constants.DefaultPageSize;
+
+    [BindFrom("sort_by")] public string? SortBy { get; init; }
+
+    [BindFrom("liked_by")] public int? LikedBy { get; init; }
+
+    [BindFrom("created_by")] public int? CreatedBy { get; init; }
 }
