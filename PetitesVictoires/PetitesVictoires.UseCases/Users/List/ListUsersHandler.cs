@@ -9,8 +9,11 @@ public class ListUsersHandler(IListUsersQueryService queryService)
     public async ValueTask<Result<PagedResult<UserDto>>> Handle(ListUsersQuery query,
         CancellationToken cancellationToken)
     {
-        var result = await queryService.ListAsync(query.Page ?? 1, query.CountPerPage ?? Constants.DefaultPageSize,
-            cancellationToken);
+        var result = await queryService.ListAsync(
+            query.ListQueryParams,
+            query.ListUsersCriteria,
+            cancellationToken
+        );
 
         return result;
     }

@@ -31,4 +31,35 @@ public class ListUsersMapperTests
         response.TotalEntityCount.ShouldBe(41);
         response.TotalPages.ShouldBe(3);
     }
+
+    [Test]
+    public void ToQuery_MapsPagingIntoQueryParams()
+    {
+        var request = new ListUsersRequest { Page = 4, CountPerPage = 15 };
+
+        var query = new ListUsersMapper().ToQuery(request);
+
+        query.ListQueryParams.Page.ShouldBe(4);
+        query.ListQueryParams.CountPerPage.ShouldBe(15);
+    }
+
+    [Test]
+    public void ToQuery_MapsSearchIntoCriteria()
+    {
+        var request = new ListUsersRequest { Search = "alice" };
+
+        var query = new ListUsersMapper().ToQuery(request);
+
+        query.ListUsersCriteria.Search.ShouldBe("alice");
+    }
+
+    [Test]
+    public void ToQuery_WhenSearchIsNull_LeavesItNull()
+    {
+        var request = new ListUsersRequest { Search = null };
+
+        var query = new ListUsersMapper().ToQuery(request);
+
+        query.ListUsersCriteria.Search.ShouldBeNull();
+    }
 }

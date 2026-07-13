@@ -1,6 +1,8 @@
 using FastEndpoints;
 using PetitesVictoires.UseCases;
+using PetitesVictoires.UseCases.Common;
 using PetitesVictoires.UseCases.Users;
+using PetitesVictoires.UseCases.Users.List;
 
 namespace PetitesVictoires.Api.Users.List;
 
@@ -18,6 +20,14 @@ public sealed class ListUsersMapper : Mapper<ListUsersRequest, ListUsersResponse
             pagedResultEntity.CountPerPage,
             pagedResultEntity.TotalEntityCount,
             pagedResultEntity.TotalPages
+        );
+    }
+
+    public ListUsersQuery ToQuery(ListUsersRequest request)
+    {
+        return new ListUsersQuery(
+            new ListQueryParams(request.Page, request.CountPerPage),
+            new ListUsersCriteria(request.Search)
         );
     }
 }

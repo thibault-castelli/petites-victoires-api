@@ -32,7 +32,7 @@ GET {{host}}:{{port}}/users/1
 GET {{host}}:{{port}}/users/1/like-stats
 
 ### List users
-GET {{host}}:{{port}}/users?page=1
+GET {{host}}:{{port}}/users?page=1&search=john
 
 ### Sign in
 POST {{host}}:{{port}}/users/sign-in
