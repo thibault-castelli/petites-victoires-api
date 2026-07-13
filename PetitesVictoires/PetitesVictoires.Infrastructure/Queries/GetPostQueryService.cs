@@ -8,7 +8,7 @@ namespace PetitesVictoires.Infrastructure.Queries;
 
 public class GetPostQueryService(PetitesVictoiresDbContext dbContext) : IGetPostQueryService
 {
-    public async Task<PostDto?> GetPostAsync(PostId postId)
+    public async Task<PostDto?> GetPostAsync(PostId postId, CancellationToken cancellationToken)
     {
         return await dbContext.Posts
             .Where(p => p.Id == postId)
@@ -27,6 +27,6 @@ public class GetPostQueryService(PetitesVictoiresDbContext dbContext) : IGetPost
                     )
             )
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

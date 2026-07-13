@@ -8,13 +8,13 @@ namespace PetitesVictoires.Infrastructure.Queries;
 
 public class GetUserLikeStatsQueryService(PetitesVictoiresDbContext dbContext) : IGetUserLikeStatsQueryService
 {
-    public async Task<UserLikeStatsDto> GetUserLikeStatsAsync(UserId userId)
+    public async Task<UserLikeStatsDto> GetUserLikeStatsAsync(UserId userId, CancellationToken cancellationToken)
     {
-        var likesGiven = await dbContext.Likes.CountAsync(l => l.UserId == userId);
+        var likesGiven = await dbContext.Likes.CountAsync(l => l.UserId == userId, cancellationToken);
 
         var likesReceived = await dbContext.Posts
             .Where(p => p.UserId == userId)
-            .SumAsync(p => dbContext.Likes.Count(l => l.PostId == p.Id));
+            .SumAsync(p => dbContext.Likes.Count(l => l.PostId == p.Id), cancellationToken);
 
         return new UserLikeStatsDto(likesGiven, likesReceived);
     }

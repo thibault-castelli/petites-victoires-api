@@ -12,17 +12,17 @@ namespace PetitesVictoires.UnitTests.UseCases.Posts.Get;
 [TestFixture]
 public class GetPostHandlerTests
 {
-    private static readonly PostId TargetPostId = PostId.From(1);
-
-    private IGetPostQueryService _queryService = null!;
-    private GetPostHandler _handler = null!;
-
     [SetUp]
     public void SetUp()
     {
         _queryService = Substitute.For<IGetPostQueryService>();
         _handler = new GetPostHandler(_queryService);
     }
+
+    private static readonly PostId TargetPostId = PostId.From(1);
+
+    private IGetPostQueryService _queryService = null!;
+    private GetPostHandler _handler = null!;
 
     private static GetPostQuery Query()
     {
@@ -32,7 +32,7 @@ public class GetPostHandlerTests
     [Test]
     public async Task Handle_WhenPostDoesNotExist_ReturnsNotFound()
     {
-        _queryService.GetPostAsync(TargetPostId).Returns((PostDto?)null);
+        _queryService.GetPostAsync(TargetPostId, CancellationToken.None).Returns((PostDto?)null);
 
         var result = await _handler.Handle(Query(), CancellationToken.None);
 
@@ -44,7 +44,7 @@ public class GetPostHandlerTests
     {
         var dto = new PostDto(TargetPostId, PostContent.From("content"), UserId.From(1),
             Email.From("user@example.com"), UserName.From("user"), DateTime.UtcNow);
-        _queryService.GetPostAsync(TargetPostId).Returns(dto);
+        _queryService.GetPostAsync(TargetPostId, CancellationToken.None).Returns(dto);
 
         var result = await _handler.Handle(Query(), CancellationToken.None);
 

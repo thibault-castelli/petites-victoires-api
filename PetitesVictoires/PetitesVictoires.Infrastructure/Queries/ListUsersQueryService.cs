@@ -8,7 +8,7 @@ namespace PetitesVictoires.Infrastructure.Queries;
 
 public class ListUsersQueryService(PetitesVictoiresDbContext dbContext) : IListUsersQueryService
 {
-    public async Task<PagedResult<UserDto>> ListAsync(int page, int countPerPage)
+    public async Task<PagedResult<UserDto>> ListAsync(int page, int countPerPage, CancellationToken cancellationToken)
     {
         var items = await dbContext.Users
             .OrderBy(u => u.Id)
@@ -16,9 +16,9 @@ public class ListUsersQueryService(PetitesVictoiresDbContext dbContext) : IListU
             .Take(countPerPage)
             .Select(u => new UserDto(u.Id, u.EmailAddress, u.Name, u.CreatedAt))
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        var totalEntityCount = await dbContext.Users.CountAsync();
+        var totalEntityCount = await dbContext.Users.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling(totalEntityCount / (double)countPerPage);
         var result = new PagedResult<UserDto>(items, page, countPerPage, totalEntityCount, totalPages);
 

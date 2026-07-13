@@ -4,5 +4,5 @@ namespace PetitesVictoires.UseCases.Posts.Get;
 
 public interface IGetPostQueryService
 {
-    Task<PostDto?> GetPostAsync(PostId postId);
+    Task<PostDto?> GetPostAsync(PostId postId, CancellationToken cancellationToken);
 }

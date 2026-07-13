@@ -15,7 +15,7 @@ public class GetUserLikeStatsHandler(IReadRepository<User> repository, IGetUserL
         var isUserFound = await repository.AnyAsync(new UserByIdSpecification(query.UserId), cancellationToken);
         if (!isUserFound) return Result.NotFound("User not found");
 
-        var likeStats = await queryService.GetUserLikeStatsAsync(query.UserId);
+        var likeStats = await queryService.GetUserLikeStatsAsync(query.UserId, cancellationToken);
 
         return Result.Success(likeStats);
     }

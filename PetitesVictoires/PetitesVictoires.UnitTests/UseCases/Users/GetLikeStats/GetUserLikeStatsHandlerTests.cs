@@ -12,12 +12,6 @@ namespace PetitesVictoires.UnitTests.UseCases.Users.GetLikeStats;
 [TestFixture]
 public class GetUserLikeStatsHandlerTests
 {
-    private static readonly UserId TargetUserId = UserId.From(1);
-
-    private IReadRepository<User> _repository = null!;
-    private IGetUserLikeStatsQueryService _queryService = null!;
-    private GetUserLikeStatsHandler _handler = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -25,6 +19,12 @@ public class GetUserLikeStatsHandlerTests
         _queryService = Substitute.For<IGetUserLikeStatsQueryService>();
         _handler = new GetUserLikeStatsHandler(_repository, _queryService);
     }
+
+    private static readonly UserId TargetUserId = UserId.From(1);
+
+    private IReadRepository<User> _repository = null!;
+    private IGetUserLikeStatsQueryService _queryService = null!;
+    private GetUserLikeStatsHandler _handler = null!;
 
     private static GetUserLikeStatsQuery Query()
     {
@@ -53,7 +53,7 @@ public class GetUserLikeStatsHandlerTests
 
         await _handler.Handle(Query(), CancellationToken.None);
 
-        await _queryService.DidNotReceiveWithAnyArgs().GetUserLikeStatsAsync(TargetUserId);
+        await _queryService.DidNotReceiveWithAnyArgs().GetUserLikeStatsAsync(TargetUserId, CancellationToken.None);
     }
 
     [Test]
@@ -61,7 +61,7 @@ public class GetUserLikeStatsHandlerTests
     {
         ArrangeUserExists(true);
         var stats = new UserLikeStatsDto(3, 7);
-        _queryService.GetUserLikeStatsAsync(TargetUserId).Returns(stats);
+        _queryService.GetUserLikeStatsAsync(TargetUserId, CancellationToken.None).Returns(stats);
 
         var result = await _handler.Handle(Query(), CancellationToken.None);
 

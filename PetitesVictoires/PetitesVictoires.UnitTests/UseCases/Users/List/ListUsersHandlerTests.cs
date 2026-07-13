@@ -9,18 +9,18 @@ namespace PetitesVictoires.UnitTests.UseCases.Users.List;
 [TestFixture]
 public class ListUsersHandlerTests
 {
-    private const int RequestedPage = 3;
-    private const int RequestedCountPerPage = 20;
-
-    private IListUsersQueryService _queryService = null!;
-    private ListUsersHandler _handler = null!;
-
     [SetUp]
     public void SetUp()
     {
         _queryService = Substitute.For<IListUsersQueryService>();
         _handler = new ListUsersHandler(_queryService);
     }
+
+    private const int RequestedPage = 3;
+    private const int RequestedCountPerPage = 20;
+
+    private IListUsersQueryService _queryService = null!;
+    private ListUsersHandler _handler = null!;
 
     private static PagedResult<UserDto> EmptyPage(int page, int countPerPage)
     {
@@ -31,7 +31,7 @@ public class ListUsersHandlerTests
     public async Task Handle_ReturnsTheResultFromTheQueryService()
     {
         var paged = EmptyPage(RequestedPage, RequestedCountPerPage);
-        _queryService.ListAsync(RequestedPage, RequestedCountPerPage).Returns(paged);
+        _queryService.ListAsync(RequestedPage, RequestedCountPerPage, CancellationToken.None).Returns(paged);
 
         var result = await _handler.Handle(new ListUsersQuery(RequestedPage, RequestedCountPerPage),
             CancellationToken.None);
@@ -43,21 +43,22 @@ public class ListUsersHandlerTests
     [Test]
     public async Task Handle_PassesRequestedPagingToTheQueryService()
     {
-        _queryService.ListAsync(RequestedPage, RequestedCountPerPage)
+        _queryService.ListAsync(RequestedPage, RequestedCountPerPage, CancellationToken.None)
             .Returns(EmptyPage(RequestedPage, RequestedCountPerPage));
 
         await _handler.Handle(new ListUsersQuery(RequestedPage, RequestedCountPerPage), CancellationToken.None);
 
-        await _queryService.Received(1).ListAsync(RequestedPage, RequestedCountPerPage);
+        await _queryService.Received(1).ListAsync(RequestedPage, RequestedCountPerPage, CancellationToken.None);
     }
 
     [Test]
     public async Task Handle_WhenPagingIsNull_FallsBackToDefaults()
     {
-        _queryService.ListAsync(1, Constants.DefaultPageSize).Returns(EmptyPage(1, Constants.DefaultPageSize));
+        _queryService.ListAsync(1, Constants.DefaultPageSize, CancellationToken.None)
+            .Returns(EmptyPage(1, Constants.DefaultPageSize));
 
         await _handler.Handle(new ListUsersQuery(null, null), CancellationToken.None);
 
-        await _queryService.Received(1).ListAsync(1, Constants.DefaultPageSize);
+        await _queryService.Received(1).ListAsync(1, Constants.DefaultPageSize, CancellationToken.None);
     }
 }
