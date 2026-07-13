@@ -17,7 +17,8 @@ public class CachingBehavior<TMessage, TResponse>(
     public async ValueTask<TResponse> Handle(TMessage message, MessageHandlerDelegate<TMessage, TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (message is not ICachedQuery q) return await next(message, cancellationToken);
+        if (message is not ICachedQuery q || string.IsNullOrEmpty(q.CacheKey))
+            return await next(message, cancellationToken);
 
         var cached = await cache.GetStringAsync(q.CacheKey, cancellationToken);
         if (cached is not null)

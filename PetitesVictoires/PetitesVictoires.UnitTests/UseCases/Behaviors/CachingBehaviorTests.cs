@@ -85,6 +85,22 @@ public class CachingBehaviorTests
                 Arg.Any<CancellationToken>());
     }
 
+    [TestCase("")]
+    [TestCase(null)]
+    public async Task Handle_WhenCacheKeyIsNullOrEmpty_CallsNextWithoutTouchingCache(string? cacheKey)
+    {
+        var query = new TestCachedQuery(null, cacheKey!);
+
+        var result = await _behavior.Handle(query, Next(OkResponse()), CancellationToken.None);
+
+        _nextCallCount.ShouldBe(1);
+        result.IsSuccess.ShouldBeTrue();
+        await _cache.DidNotReceive().GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _cache.DidNotReceive()
+            .SetAsync(Arg.Any<string>(), Arg.Any<byte[]>(), Arg.Any<DistributedCacheEntryOptions>(),
+                Arg.Any<CancellationToken>());
+    }
+
     [Test]
     public async Task Handle_WhenCacheHit_ReturnsCachedResponse()
     {
@@ -189,9 +205,9 @@ public class CachingBehaviorTests
 
     private sealed record TestDto(int Id, string Name);
 
-    private sealed record TestCachedQuery(TimeSpan? Timeout) : ICachedQuery<Result<TestDto>>
+    private sealed record TestCachedQuery(TimeSpan? Timeout, string CacheKey = TestCacheKey)
+        : ICachedQuery<Result<TestDto>>
     {
-        public string CacheKey => TestCacheKey;
         public TimeSpan? CacheTimeout => Timeout;
     }
 

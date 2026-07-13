@@ -32,7 +32,7 @@ GET {{host}}:{{port}}/users/1
 GET {{host}}:{{port}}/users/1/like-stats
 
 ### List users
-GET {{host}}:{{port}}/users?page=1&search=john
+GET {{host}}:{{port}}/users?page=1
 
 ### Sign in
 POST {{host}}:{{port}}/users/sign-in
@@ -50,7 +50,7 @@ GET {{host}}:{{port}}/users/sign-out
 GET {{host}}:{{port}}/posts/2
 
 ### List posts
-GET {{host}}:{{port}}/posts?page=1&count_per_page=2
+GET {{host}}:{{port}}/posts?page=1&sort_by=likes_count
 
 ### Create post
 POST {{host}}:{{port}}/posts
