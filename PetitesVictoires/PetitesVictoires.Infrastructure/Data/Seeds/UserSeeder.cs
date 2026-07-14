@@ -1,32 +1,49 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.UserAggregate;
+using PetitesVictoires.Infrastructure.Identity;
 
 namespace PetitesVictoires.Infrastructure.Data.Seeds;
 
 public static class UserSeeder
 {
-    public static readonly UserId UserId1 = UserId.From(9998);
-    public static readonly UserId UserId2 = UserId.From(9999);
-
     private static readonly Email Email1 = Email.From("example@mail.com");
     private static readonly Email Email2 = Email.From("johndoe@mail.com");
 
     private static readonly UserName Name1 = UserName.From("example");
     private static readonly UserName Name2 = UserName.From("johndoe");
 
-    public static async Task SeedAsync(PetitesVictoiresDbContext dbContext)
+    public static async Task<List<UserId>> SeedAsync(PetitesVictoiresDbContext dbContext,
+        UserManager<ApplicationUser> userManager)
     {
-        if (await dbContext.Users.AnyAsync()) return; // DB has been seeded
+        if (await dbContext.Users.AnyAsync()) return []; // DB has been seeded
 
-        await PopulateDataAsync(dbContext);
+        return await PopulateDataAsync(dbContext, userManager);
     }
 
-    private static async Task PopulateDataAsync(PetitesVictoiresDbContext dbContext)
+    private static async Task<List<UserId>> PopulateDataAsync(PetitesVictoiresDbContext dbContext,
+        UserManager<ApplicationUser> userManager)
     {
-        await dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"INSERT INTO \"Users\" (\"Id\", \"EmailAddress\", \"Name\", \"CreatedAt\") VALUES ({UserId1.Value}, {Email1.Value}, {Name1.Value}, {DateTime.UtcNow})");
-        await dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"INSERT INTO \"Users\" (\"Id\", \"EmailAddress\", \"Name\", \"CreatedAt\") VALUES ({UserId2.Value}, {Email2.Value}, {Name2.Value}, {DateTime.UtcNow})");
+        var seedUsers = new[]
+        {
+            (Name1, Email1),
+            (Name2, Email2)
+        };
+        var ids = new List<UserId>();
+
+        foreach (var (name, email) in seedUsers)
+        {
+            var applicationUser = new ApplicationUser { UserName = name.Value, Email = email.Value };
+            var result = await userManager.CreateAsync(applicationUser, "Password123!");
+            if (!result.Succeeded) throw new InvalidOperationException();
+
+            await dbContext.Database.ExecuteSqlInterpolatedAsync(
+                $"INSERT INTO \"Users\" (\"Id\", \"EmailAddress\", \"Name\", \"CreatedAt\") VALUES ({applicationUser.Id}, {email.Value}, {name.Value}, {DateTime.UtcNow})");
+
+            ids.Add(UserId.From(applicationUser.Id));
+        }
+
+        return ids;
     }
 }

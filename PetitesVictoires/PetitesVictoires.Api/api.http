@@ -6,8 +6,8 @@ POST {{host}}:{{port}}/users
 Content-Type: application/json
 
 {
-  "EmailAddress": "example3@mail.com",
-  "Name": "example3",
+  "EmailAddress": "example2@mail.com",
+  "Name": "example2",
   "Password": "Password1!"
 }
 
@@ -39,8 +39,8 @@ POST {{host}}:{{port}}/users/sign-in
 Content-Type: application/json
 
 {
-  "EmailAddress": "new-example@mail.com",
-  "Password": "Password2?"
+  "EmailAddress": "example@mail.com",
+  "Password": "Password123!"
 }
 
 ### Sign out

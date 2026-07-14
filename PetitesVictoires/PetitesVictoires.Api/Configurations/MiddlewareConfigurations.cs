@@ -1,9 +1,11 @@
 using Ardalis.ListStartupServices;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetitesVictoires.Infrastructure.Data;
 using PetitesVictoires.Infrastructure.Data.Seeds;
+using PetitesVictoires.Infrastructure.Identity;
 using Scalar.AspNetCore;
 
 namespace PetitesVictoires.Api.Configurations;
@@ -85,7 +87,8 @@ public static class MiddlewareConfigurations
             {
                 logger.LogInformation("Seeding database...");
                 var context = services.GetRequiredService<PetitesVictoiresDbContext>();
-                await DatabaseSeeder.SeedAsync(context);
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                await DatabaseSeeder.SeedAsync(context, userManager);
                 logger.LogInformation("Seeding database completed successfully.");
             }
             catch (Exception ex)
