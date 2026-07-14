@@ -8,7 +8,7 @@ public static class DatabaseSeeder
     public static async Task SeedAsync(PetitesVictoiresDbContext dbContext, UserManager<ApplicationUser> userManager)
     {
         var userIds = await UserSeeder.SeedAsync(dbContext, userManager);
-        await PostSeeder.SeedAsync(dbContext, userIds);
-        await LikeSeeder.SeedAsync(dbContext, userIds);
+        var postIds = await PostSeeder.SeedAsync(dbContext, userIds);
+        await LikeSeeder.SeedAsync(dbContext, userIds, postIds);
     }
 }
