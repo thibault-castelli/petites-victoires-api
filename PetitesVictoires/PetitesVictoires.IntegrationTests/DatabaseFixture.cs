@@ -47,8 +47,16 @@ public class DatabaseFixture
         await _respawner.ResetAsync(connection);
     }
 
-    public static PetitesVictoiresDbContext CreateContext() =>
-        new(new DbContextOptionsBuilder<PetitesVictoiresDbContext>()
-            .UseNpgsql(ConnectionString)
-            .Options);
+    public static PetitesVictoiresDbContext CreateContext(bool withInterceptors = false)
+    {
+        var builder = new DbContextOptionsBuilder<PetitesVictoiresDbContext>()
+            .UseNpgsql(ConnectionString);
+
+        // The query-service tests read through a bare context; interceptor and repository-write
+        // tests need the real SaveChanges pipeline (audit stamping + hard-delete -> soft-delete).
+        if (withInterceptors)
+            builder.AddInterceptors(new AuditableInterceptor());
+
+        return new PetitesVictoiresDbContext(builder.Options);
+    }
 }

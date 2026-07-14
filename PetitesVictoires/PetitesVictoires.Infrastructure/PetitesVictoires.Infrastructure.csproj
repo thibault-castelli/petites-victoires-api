@@ -26,4 +26,8 @@
         <ProjectReference Include="..\PetitesVictoires.UseCases\PetitesVictoires.UseCases.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="PetitesVictoires.IntegrationTests"/>
+    </ItemGroup>
+
 </Project>
