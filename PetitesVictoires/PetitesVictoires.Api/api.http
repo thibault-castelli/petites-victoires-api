@@ -61,7 +61,7 @@ Content-Type: application/json
 }
 
 ### Update post
-PUT {{host}}:{{port}}/posts/2
+PUT {{host}}:{{port}}/posts/3
 Content-Type: application/json
 
 {
@@ -69,7 +69,7 @@ Content-Type: application/json
 }
 
 ### Delete post
-DELETE {{host}}:{{port}}/posts/1
+DELETE {{host}}:{{port}}/posts/3
 
 ### Create like
 POST {{host}}:{{port}}/likes

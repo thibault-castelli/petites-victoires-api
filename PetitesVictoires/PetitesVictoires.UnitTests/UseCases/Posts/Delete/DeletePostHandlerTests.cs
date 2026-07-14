@@ -73,7 +73,7 @@ public class DeletePostHandlerTests
 
         await _handler.Handle(Command(), CancellationToken.None);
 
-        await _repository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
+        await _repository.DidNotReceive().DeleteAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -103,7 +103,7 @@ public class DeletePostHandlerTests
 
         await _handler.Handle(Command(), CancellationToken.None);
 
-        await _repository.DidNotReceive().UpdateAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
+        await _repository.DidNotReceive().DeleteAsync(Arg.Any<Post>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -127,23 +127,13 @@ public class DeletePostHandlerTests
     }
 
     [Test]
-    public async Task Handle_WhenValid_SoftDeletesThePost()
+    public async Task Handle_WhenValid_DeletesThePost()
     {
         var post = ArrangeValid();
 
         await _handler.Handle(Command(), CancellationToken.None);
 
-        post.DeletedAt.ShouldNotBeNull();
-    }
-
-    [Test]
-    public async Task Handle_WhenValid_PersistsThePost()
-    {
-        var post = ArrangeValid();
-
-        await _handler.Handle(Command(), CancellationToken.None);
-
-        await _repository.Received(1).UpdateAsync(post, CancellationToken.None);
+        await _repository.Received(1).DeleteAsync(post, CancellationToken.None);
     }
 
     [Test]

@@ -66,7 +66,36 @@ public class PostTests
         post.Content.ShouldBe(PostContent.From("Same content"));
     }
 
-    // Note: CreatedAt stays here (not in BaseEntityTests) because BaseEntity only declares the
-    // property — Post's own constructor is what stamps it. MarkUpdated/MarkSoftDeleted, being
-    // shared base behavior, are tested once in BaseEntityTests instead.
+    [Test]
+    public void NewPost_HasNoUpdatedOrDeletedTimestamp()
+    {
+        var post = CreatePost();
+
+        post.UpdatedAt.ShouldBeNull();
+        post.DeletedAt.ShouldBeNull();
+    }
+
+    [Test]
+    public void MarkUpdated_SetsUpdatedAtToUtcNow()
+    {
+        var post = CreatePost();
+
+        var before = DateTime.UtcNow;
+        post.MarkUpdated();
+
+        post.UpdatedAt.ShouldNotBeNull();
+        post.UpdatedAt!.Value.ShouldBeInRange(before, DateTime.UtcNow);
+    }
+
+    [Test]
+    public void MarkSoftDeleted_SetsDeletedAtToUtcNow()
+    {
+        var post = CreatePost();
+
+        var before = DateTime.UtcNow;
+        post.MarkSoftDeleted();
+
+        post.DeletedAt.ShouldNotBeNull();
+        post.DeletedAt!.Value.ShouldBeInRange(before, DateTime.UtcNow);
+    }
 }

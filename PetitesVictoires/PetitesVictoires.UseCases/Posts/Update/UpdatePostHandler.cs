@@ -26,7 +26,6 @@ public class UpdatePostHandler(
         if (user is null) return Result.NotFound("User not found");
 
         postToUpdate.UpdateContent(command.PostContent);
-        postToUpdate.MarkUpdated();
 
         await postRepository.UpdateAsync(postToUpdate, cancellationToken);
         await cache.RemoveAsync($"{Constants.PostCachePrefix}{postToUpdate.Id.Value}", cancellationToken);

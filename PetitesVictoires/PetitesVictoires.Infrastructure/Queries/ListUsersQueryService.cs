@@ -54,8 +54,7 @@ public class ListUsersQueryService(PetitesVictoiresDbContext dbContext) : IListU
         var searchedUsers = await dbContext.Users
             .FromSql($"""
                       SELECT * FROM "Users"
-                      WHERE "DeletedAt" IS NULL
-                        AND ("EmailAddress" ILIKE {anywhere} OR "Name" ILIKE {anywhere})
+                      WHERE ("EmailAddress" ILIKE {anywhere} OR "Name" ILIKE {anywhere})
                       ORDER BY
                         CASE
                           WHEN "EmailAddress" ILIKE {search}   OR "Name" ILIKE {search}   THEN 0

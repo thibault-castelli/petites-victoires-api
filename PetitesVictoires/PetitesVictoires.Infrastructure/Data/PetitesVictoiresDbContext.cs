@@ -1,7 +1,9 @@
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PetitesVictoires.Core.Common;
 using PetitesVictoires.Core.LikeAggregate;
 using PetitesVictoires.Core.PostAggregate;
 using PetitesVictoires.Core.UserAggregate;
@@ -20,5 +22,18 @@ public class PetitesVictoiresDbContext(DbContextOptions<PetitesVictoiresDbContex
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Add soft-delete query filter
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (!typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType)) continue;
+
+            var parameter = Expression.Parameter(entityType.ClrType, "e");
+            var body = Expression.Equal(
+                Expression.Property(parameter, nameof(ISoftDeletable.DeletedAt)),
+                Expression.Constant(null, typeof(DateTime?))); // <-- typed null, not bare null
+            modelBuilder.Entity(entityType.ClrType)
+                .HasQueryFilter(Expression.Lambda(body, parameter));
+        }
     }
 }

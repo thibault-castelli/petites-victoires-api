@@ -15,9 +15,7 @@ public class DeletePostHandler(IRepository<Post> repository, IDistributedCache c
         if (postToSoftDelete is null) return Result.NotFound();
         if (postToSoftDelete.UserId != command.UserId) return Result.Forbidden();
 
-        postToSoftDelete.MarkSoftDeleted();
-
-        await repository.UpdateAsync(postToSoftDelete, cancellationToken);
+        await repository.DeleteAsync(postToSoftDelete, cancellationToken);
         await cache.RemoveAsync($"{Constants.PostCachePrefix}{postToSoftDelete.Id.Value}", cancellationToken);
 
         return Result.Success();

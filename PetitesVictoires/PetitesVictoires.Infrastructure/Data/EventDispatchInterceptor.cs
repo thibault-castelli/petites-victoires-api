@@ -5,9 +5,6 @@ namespace PetitesVictoires.Infrastructure.Data;
 
 public class EventDispatchInterceptor(IDomainEventDispatcher domainEventDispatcher) : SaveChangesInterceptor
 {
-    private readonly IDomainEventDispatcher _domainEventDispatcher = domainEventDispatcher;
-
-    // Called after SaveChangesAsync has completed successfully
     public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result,
         CancellationToken cancellationToken = new())
     {
@@ -15,14 +12,12 @@ public class EventDispatchInterceptor(IDomainEventDispatcher domainEventDispatch
         if (context is not PetitesVictoiresDbContext appDbContext)
             return await base.SavedChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
 
-        // Retrieve all tracked entities that have domain events
         var entitiesWithEvents = appDbContext.ChangeTracker.Entries<HasDomainEventsBase>()
             .Select(e => e.Entity)
-            .Where(e => e.DomainEvents.Any())
+            .Where(e => e.DomainEvents.Count != 0)
             .ToArray();
 
-        // Dispatch and clear domain events
-        await _domainEventDispatcher.DispatchAndClearEvents(entitiesWithEvents);
+        await domainEventDispatcher.DispatchAndClearEvents(entitiesWithEvents);
 
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }

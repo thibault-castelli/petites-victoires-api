@@ -4,7 +4,7 @@ using PetitesVictoires.Core.UserAggregate.Events;
 
 namespace PetitesVictoires.Core.UserAggregate;
 
-public class User : BaseEntity<UserId>, IAggregateRoot
+public class User : BaseEntity<UserId>, IAggregateRoot, IAuditable
 {
     private User()
     {
@@ -22,6 +22,13 @@ public class User : BaseEntity<UserId>, IAggregateRoot
 
     public Email EmailAddress { get; private set; }
     public UserName Name { get; private set; }
+
+    public DateTime? UpdatedAt { get; private set; }
+
+    public void MarkUpdated()
+    {
+        UpdatedAt = DateTime.UtcNow;
+    }
 
     public User UpdateEmailAddress(Email emailAddress)
     {

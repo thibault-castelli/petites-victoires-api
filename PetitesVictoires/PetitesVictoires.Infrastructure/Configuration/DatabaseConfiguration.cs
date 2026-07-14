@@ -14,12 +14,15 @@ public static class DatabaseConfiguration
         public IServiceCollection AddDatabaseConfiguration(string connectionString)
         {
             services.AddScoped<EventDispatchInterceptor>();
+            services.AddScoped<AuditableInterceptor>();
 
             services.AddDbContext<PetitesVictoiresDbContext>((provider, options) =>
             {
                 var eventDispatchInterceptor = provider.GetRequiredService<EventDispatchInterceptor>();
+                var auditableInterceptor = provider.GetRequiredService<AuditableInterceptor>();
+
                 options.UseNpgsql(connectionString);
-                options.AddInterceptors(eventDispatchInterceptor);
+                options.AddInterceptors(eventDispatchInterceptor, auditableInterceptor);
             });
 
             services

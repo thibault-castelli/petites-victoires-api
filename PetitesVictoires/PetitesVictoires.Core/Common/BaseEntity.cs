@@ -2,20 +2,25 @@ using Ardalis.SharedKernel;
 
 namespace PetitesVictoires.Core.Common;
 
-public abstract class BaseEntity<TId> : HasDomainEventsBase
+public abstract class BaseEntity<TId> : HasDomainEventsBase, IHasCreationTime
 {
     public TId Id { get; set; } = default!;
     public DateTime CreatedAt { get; init; }
-    public DateTime? UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+}
 
-    public void MarkUpdated()
-    {
-        UpdatedAt = DateTime.UtcNow;
-    }
+public interface IHasCreationTime
+{
+    DateTime CreatedAt { get; }
+}
 
-    public void MarkSoftDeleted()
-    {
-        DeletedAt = DateTime.UtcNow;
-    }
+public interface IAuditable
+{
+    DateTime? UpdatedAt { get; }
+    void MarkUpdated();
+}
+
+public interface ISoftDeletable
+{
+    DateTime? DeletedAt { get; }
+    void MarkSoftDeleted();
 }

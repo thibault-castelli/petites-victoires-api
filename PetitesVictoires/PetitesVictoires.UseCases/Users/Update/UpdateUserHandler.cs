@@ -21,7 +21,6 @@ public class UpdateUserHandler(
 
         existingUser.UpdateEmailAddress(command.EmailAddress);
         existingUser.UpdateName(command.Name);
-        existingUser.MarkUpdated();
 
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 

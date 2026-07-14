@@ -25,7 +25,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(e => e.CreatedAt)
             .IsRequired();
-
-        builder.HasQueryFilter(e => e.DeletedAt == null);
     }
 }

@@ -32,7 +32,5 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .WithMany()
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasQueryFilter(e => e.DeletedAt == null);
     }
 }

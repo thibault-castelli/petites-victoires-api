@@ -116,4 +116,24 @@ public class UserTests
 
         user.Name.ShouldBe(UserName.From("Same"));
     }
+
+    [Test]
+    public void NewUser_HasNoUpdatedTimestamp()
+    {
+        var user = CreateUser();
+
+        user.UpdatedAt.ShouldBeNull();
+    }
+
+    [Test]
+    public void MarkUpdated_SetsUpdatedAtToUtcNow()
+    {
+        var user = CreateUser();
+
+        var before = DateTime.UtcNow;
+        user.MarkUpdated();
+
+        user.UpdatedAt.ShouldNotBeNull();
+        user.UpdatedAt!.Value.ShouldBeInRange(before, DateTime.UtcNow);
+    }
 }
