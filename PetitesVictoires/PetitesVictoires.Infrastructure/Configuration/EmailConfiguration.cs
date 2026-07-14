@@ -25,6 +25,9 @@ public static class EmailConfiguration
 
                     mail.Host = uri.Host;
                     mail.Port = uri.Port;
+                    mail.UseSsl = false;
+                    mail.UserName = null;
+                    mail.Password = null;
                 });
 
             var mailConfigured =
