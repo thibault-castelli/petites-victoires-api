@@ -8,8 +8,7 @@ public class SignOutEndpoint : EndpointWithoutRequest<Results<NoContent, Problem
 {
     public override void Configure()
     {
-        Get("/Users/Sign-Out");
-        EnableAntiforgery();
+        Post("/Users/Sign-Out");
         Summary(s =>
         {
             s.Summary = "Sign out a user";

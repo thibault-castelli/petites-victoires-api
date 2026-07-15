@@ -16,7 +16,6 @@ public class SignInEndpoint(IMediator mediator)
     {
         Post(SignInRequest.Route);
         AllowAnonymous();
-        EnableAntiforgery();
         Summary(s =>
         {
             s.Summary = "Sign in a user";

@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Caching.Distributed;
@@ -33,15 +31,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             // Creating a user raises UserCreatedEvent -> welcome email, which would dial a real SMTP host.
             services.RemoveAll<IEmailSender>();
             services.AddScoped(_ => Substitute.For<IEmailSender>());
-
-            // SignIn/SignOut opt into antiforgery, but the app exposes no token endpoint — no-op the check.
-            services.RemoveAll<IAntiforgery>();
-            services.AddSingleton(_ =>
-            {
-                var antiforgery = Substitute.For<IAntiforgery>();
-                antiforgery.ValidateRequestAsync(Arg.Any<HttpContext>()).Returns(Task.CompletedTask);
-                return antiforgery;
-            });
 
             // Only authenticate/challenge are redirected to the test handler; DefaultScheme stays on
             // cookies so CookieAuth.SignInAsync/SignOutAsync still work in the sign-in tests.
