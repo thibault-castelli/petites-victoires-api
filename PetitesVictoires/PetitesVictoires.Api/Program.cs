@@ -22,3 +22,7 @@ await app.AddMidlewareConfigurations();
 app.MapDefaultEndpoints(); // Aspire health checks and metrics
 
 app.Run();
+
+// Top-level statements compile to an internal Program; this exposes it so the functional test
+// project can boot the real app through WebApplicationFactory<Program>.
+public partial class Program;

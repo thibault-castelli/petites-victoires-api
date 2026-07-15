@@ -10,6 +10,7 @@
     <Project Path="PetitesVictoires.ServiceDefaults/PetitesVictoires.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="PetitesVictoires.FunctionalTests/PetitesVictoires.FunctionalTests.csproj" />
     <Project Path="PetitesVictoires.IntegrationTests/PetitesVictoires.IntegrationTests.csproj" />
     <Project Path="PetitesVictoires.TestSupport/PetitesVictoires.TestSupport.csproj" />
     <Project Path="PetitesVictoires.UnitTests/PetitesVictoires.UnitTests.csproj" />
