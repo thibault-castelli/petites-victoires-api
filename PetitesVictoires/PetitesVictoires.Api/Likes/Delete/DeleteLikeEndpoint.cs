@@ -27,7 +27,7 @@ public class DeleteLikeEndpoint(IMediator mediator)
         Description(b => b
             .WithName("DeleteLike")
             .Accepts<DeleteLikeRequest>("application/json")
-            .Produces<NoContent>()
+            .Produces(204)
             .ProducesProblem(401)
             .ProducesProblem(404)
             .ProducesProblem(500)
