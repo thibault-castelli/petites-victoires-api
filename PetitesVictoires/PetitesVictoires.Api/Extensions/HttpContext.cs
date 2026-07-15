@@ -10,7 +10,7 @@ public static class HttpContext
 
             string Link(string rel, int p)
             {
-                return $"<{baseUrl}?page={p}&per_page={countPerPage}>; rel=\"{rel}\"";
+                return $"<{baseUrl}?page={p}&count_per_page={countPerPage}>; rel=\"{rel}\"";
             }
 
             var parts = new List<string>();

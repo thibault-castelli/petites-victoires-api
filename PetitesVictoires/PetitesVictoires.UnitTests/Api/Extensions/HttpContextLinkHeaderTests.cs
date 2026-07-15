@@ -26,10 +26,10 @@ public class HttpContextLinkHeaderTests
     {
         var context = ContextForPostsList();
 
-        context.AddLinkHeader(page: 2, countPerPage: 10, totalPages: 5);
+        context.AddLinkHeader(2, 10, 5);
 
         var link = LinkHeader(context);
-        link.ShouldContain("<https://example.com/Posts?page=1&per_page=10>; rel=\"first\"");
+        link.ShouldContain("<https://example.com/Posts?page=1&count_per_page=10>; rel=\"first\"");
         link.ShouldContain("rel=\"prev\"");
         link.ShouldContain("rel=\"next\"");
         link.ShouldContain("rel=\"last\"");
@@ -40,7 +40,7 @@ public class HttpContextLinkHeaderTests
     {
         var context = ContextForPostsList();
 
-        context.AddLinkHeader(page: 1, countPerPage: 10, totalPages: 5);
+        context.AddLinkHeader(1, 10, 5);
 
         var link = LinkHeader(context);
         link.ShouldNotContain("rel=\"first\"");
@@ -54,7 +54,7 @@ public class HttpContextLinkHeaderTests
     {
         var context = ContextForPostsList();
 
-        context.AddLinkHeader(page: 5, countPerPage: 10, totalPages: 5);
+        context.AddLinkHeader(5, 10, 5);
 
         var link = LinkHeader(context);
         link.ShouldContain("rel=\"first\"");
@@ -68,7 +68,7 @@ public class HttpContextLinkHeaderTests
     {
         var context = ContextForPostsList();
 
-        context.AddLinkHeader(page: 1, countPerPage: 10, totalPages: 1);
+        context.AddLinkHeader(1, 10, 1);
 
         context.Response.Headers.ContainsKey("Link").ShouldBeFalse();
     }
