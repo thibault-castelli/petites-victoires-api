@@ -23,6 +23,7 @@ public class CreateLikeEndpoint(IMediator mediator)
             s.Responses[400] = "Invalid input data (validation errors)";
             s.Responses[401] = "Unauthorized, user not signed in";
             s.Responses[404] = "Post to like not found";
+            s.Responses[409] = "The user has already liked this post";
             s.Responses[500] = "Internal server error";
         });
         Tags("Likes");
@@ -32,6 +33,7 @@ public class CreateLikeEndpoint(IMediator mediator)
             .ProducesProblem(400)
             .ProducesProblem(401)
             .ProducesProblem(404)
+            .ProducesProblem(409)
             .ProducesProblem(500)
         );
     }

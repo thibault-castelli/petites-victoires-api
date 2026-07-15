@@ -27,7 +27,12 @@ public static class ResultExtensions
             _ => TypedResults.Problem(
                 title: "Create failed",
                 detail: string.Join("; ", result.Errors),
-                statusCode: StatusCodes.Status400BadRequest)
+                statusCode: result.Status switch
+                {
+                    ResultStatus.NotFound => StatusCodes.Status404NotFound,
+                    ResultStatus.Conflict => StatusCodes.Status409Conflict,
+                    _ => StatusCodes.Status400BadRequest
+                })
         };
     }
 

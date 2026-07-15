@@ -75,6 +75,30 @@ public class ResultExtensionsTests
     }
 
     [Test]
+    public void ToCreatedResult_WhenNotFound_ReturnsProblem404()
+    {
+        var mapped = Result<string>.NotFound("missing").ToCreatedResult(v => v, v => v);
+
+        mapped.Result.ShouldBeOfType<ProblemHttpResult>().StatusCode.ShouldBe(StatusCodes.Status404NotFound);
+    }
+
+    [Test]
+    public void ToCreatedResult_WhenConflict_ReturnsProblem409()
+    {
+        var mapped = Result<string>.Conflict("already exists").ToCreatedResult(v => v, v => v);
+
+        mapped.Result.ShouldBeOfType<ProblemHttpResult>().StatusCode.ShouldBe(StatusCodes.Status409Conflict);
+    }
+
+    [Test]
+    public void ToCreatedResult_WhenConflict_KeepsErrorsInDetail()
+    {
+        var mapped = Result<string>.Conflict("already exists").ToCreatedResult(v => v, v => v);
+
+        mapped.Result.ShouldBeOfType<ProblemHttpResult>().ProblemDetails.Detail.ShouldContain("already exists");
+    }
+
+    [Test]
     public void ToGetByIdResult_WhenOk_ReturnsOkWithMappedResponse()
     {
         var mapped = Result<string>.Success("value").ToGetByIdResult(v => $"mapped:{v}");
