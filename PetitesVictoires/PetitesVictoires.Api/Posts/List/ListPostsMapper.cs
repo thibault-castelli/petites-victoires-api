@@ -7,9 +7,9 @@ using PetitesVictoires.UseCases.Posts.List;
 
 namespace PetitesVictoires.Api.Posts.List;
 
-public sealed class ListPostsMapper : Mapper<ListPostsRequest, ListPostsResponse, PagedResult<PostDto>>
+public sealed class ListPostsMapper : Mapper<ListPostsRequest, PagedResult<PostRecord>, PagedResult<PostDto>>
 {
-    public override ListPostsResponse FromEntity(PagedResult<PostDto> pagedResultEntity)
+    public override PagedResult<PostRecord> FromEntity(PagedResult<PostDto> pagedResultEntity)
     {
         var items = pagedResultEntity.Items
             .Select(p => new PostRecord(
@@ -23,7 +23,7 @@ public sealed class ListPostsMapper : Mapper<ListPostsRequest, ListPostsResponse
             )
             .ToList();
 
-        return new ListPostsResponse(
+        return new PagedResult<PostRecord>(
             items,
             pagedResultEntity.Page,
             pagedResultEntity.CountPerPage,

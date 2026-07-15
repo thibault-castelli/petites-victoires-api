@@ -7,7 +7,7 @@ using PetitesVictoires.UseCases;
 namespace PetitesVictoires.Api.Users.List;
 
 public class ListUsersEndpoint(IMediator mediator)
-    : Endpoint<ListUsersRequest, Results<Ok<ListUsersResponse>, ProblemHttpResult>, ListUsersMapper>
+    : Endpoint<ListUsersRequest, Results<Ok<PagedResult<UserRecord>>, ProblemHttpResult>, ListUsersMapper>
 {
     public override void Configure()
     {
@@ -17,7 +17,7 @@ public class ListUsersEndpoint(IMediator mediator)
         {
             s.Summary = "Lists all users matching the specified criteria and by paging";
             s.ExampleRequest = new ListUsersRequest { Page = 1, CountPerPage = 10, Search = "example" };
-            s.ResponseExamples[200] = new ListUsersResponse(
+            s.ResponseExamples[200] = new PagedResult<UserRecord>(
                 new List<UserRecord>
                 {
                     new(1, "example@mail.com", "example", DateTime.UtcNow),
@@ -34,12 +34,13 @@ public class ListUsersEndpoint(IMediator mediator)
         Description(b => b
             .WithName("ListUsers")
             .Accepts<ListUsersRequest>()
-            .Produces<ListUsersResponse>(200, "application/json")
+            .Produces<PagedResult<UserRecord>>(200, "application/json")
             .ProducesProblem(400)
         );
     }
 
-    public override async Task<Results<Ok<ListUsersResponse>, ProblemHttpResult>> ExecuteAsync(ListUsersRequest request,
+    public override async Task<Results<Ok<PagedResult<UserRecord>>, ProblemHttpResult>> ExecuteAsync(
+        ListUsersRequest request,
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(Map.ToQuery(request), cancellationToken);
