@@ -2,7 +2,7 @@ namespace PetitesVictoires.Api.Posts.Delete;
 
 public record DeletePostRequest
 {
-    public const string Route = "/Posts/{PostId}";
+    public const string Route = "/Posts/{PostId:int}";
 
     public int PostId { get; init; }
 
