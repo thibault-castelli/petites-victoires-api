@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Mvc.Testing.Handlers;
 using PetitesVictoires.Api.Users;
 using PetitesVictoires.Api.Users.Create;
 using PetitesVictoires.Infrastructure.Data;
@@ -9,17 +10,7 @@ namespace PetitesVictoires.FunctionalTests;
 
 public abstract class FunctionalTestBase
 {
-    protected PetitesVictoiresDbContext DbContext = null!;
-
-    [SetUp]
-    public async Task BaseSetUp()
-    {
-        await DatabaseFixture.ResetAsync();
-        DbContext = DatabaseFixture.CreateContext();
-    }
-
-    [TearDown]
-    public async Task BaseTearDown() => await DbContext.DisposeAsync();
+    private static readonly Uri BaseAddress = new("https://localhost");
 
     /// <summary>
     ///     The auth cookie is issued with CookieSecurePolicy.Always, so HttpClient only sends it back
@@ -30,24 +21,53 @@ public abstract class FunctionalTestBase
         BaseAddress = new Uri("https://localhost")
     };
 
-    protected static HttpClient CreateClient() => DatabaseFixture.Factory.CreateClient(ClientOptions);
+    protected PetitesVictoiresDbContext DbContext = null!;
+
+    [SetUp]
+    public async Task BaseSetUp()
+    {
+        await DatabaseFixture.ResetAsync();
+        DbContext = DatabaseFixture.CreateContext();
+    }
+
+    [TearDown]
+    public async Task BaseTearDown()
+    {
+        await DbContext.DisposeAsync();
+    }
+
+    protected static HttpClient CreateClient()
+    {
+        return DatabaseFixture.Factory.CreateDefaultClient(
+            BaseAddress, new ApiRoutePrefixHandler(), new CookieContainerHandler());
+    }
 
     protected static HttpClient CreateClientAs(int userId)
     {
-        var client = DatabaseFixture.Factory.CreateClient(ClientOptions);
+        var client = CreateClient();
         client.DefaultRequestHeaders.Add(TestAuthHandler.UserIdHeader, userId.ToString());
         return client;
     }
 
-    protected Task SeedUserAsync(int id, string email = "user@mail.com", string name = "user") =>
-        DbContext.SeedUserAsync(id, email, name);
+    protected Task SeedUserAsync(int id, string email = "user@mail.com", string name = "user")
+    {
+        return DbContext.SeedUserAsync(id, email, name);
+    }
 
-    protected Task SeedPostAsync(int id, string content, int userId, DateTime? createdAt = null) =>
-        DbContext.SeedPostAsync(id, content, userId, createdAt);
+    protected Task SeedPostAsync(int id, string content, int userId, DateTime? createdAt = null)
+    {
+        return DbContext.SeedPostAsync(id, content, userId, createdAt);
+    }
 
-    protected Task SeedLikeAsync(int id, int userId, int postId) => DbContext.SeedLikeAsync(id, userId, postId);
+    protected Task SeedLikeAsync(int id, int userId, int postId)
+    {
+        return DbContext.SeedLikeAsync(id, userId, postId);
+    }
 
-    protected Task SoftDeletePostAsync(int id) => DbContext.SoftDeletePostAsync(id);
+    protected Task SoftDeletePostAsync(int id)
+    {
+        return DbContext.SoftDeletePostAsync(id);
+    }
 
     /// <summary>
     ///     Registers a real Identity + domain user through the API. Endpoints that go through

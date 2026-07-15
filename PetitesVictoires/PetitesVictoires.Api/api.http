@@ -1,8 +1,9 @@
 @host=https://localhost
 @port=7280
+@base=/api
 
 ### Create user
-POST {{host}}:{{port}}/users
+POST {{host}}:{{port}}{{base}}/users
 Content-Type: application/json
 
 {
@@ -12,7 +13,7 @@ Content-Type: application/json
 }
 
 ### Update user
-PUT {{host}}:{{port}}/users/1
+PUT {{host}}:{{port}}{{base}}/users/1
 Content-Type: application/json
 
 {
@@ -23,19 +24,19 @@ Content-Type: application/json
 }
 
 ### Delete user
-DELETE {{host}}:{{port}}/users/1
+DELETE {{host}}:{{port}}{{base}}/users/1
 
 ### Get user
-GET {{host}}:{{port}}/users/1
+GET {{host}}:{{port}}{{base}}/users/1
 
 ### Get user like stats
-GET {{host}}:{{port}}/users/1/like-stats
+GET {{host}}:{{port}}{{base}}/users/1/like-stats
 
 ### List users
-GET {{host}}:{{port}}/users?page=1
+GET {{host}}:{{port}}{{base}}/users?page=1
 
 ### Sign in
-POST {{host}}:{{port}}/users/sign-in
+POST {{host}}:{{port}}{{base}}/users/sign-in
 Content-Type: application/json
 
 {
@@ -44,16 +45,16 @@ Content-Type: application/json
 }
 
 ### Sign out
-POST {{host}}:{{port}}/users/sign-out
+POST {{host}}:{{port}}{{base}}/users/sign-out
 
 ### GET post
-GET {{host}}:{{port}}/posts/2
+GET {{host}}:{{port}}{{base}}/posts/2
 
 ### List posts
-GET {{host}}:{{port}}/posts?page=1&sort_by=likes_count
+GET {{host}}:{{port}}{{base}}/posts?page=1&sort_by=likes_count
 
 ### Create post
-POST {{host}}:{{port}}/posts
+POST {{host}}:{{port}}{{base}}/posts
 Content-Type: application/json
 
 {
@@ -61,7 +62,7 @@ Content-Type: application/json
 }
 
 ### Update post
-PUT {{host}}:{{port}}/posts/3
+PUT {{host}}:{{port}}{{base}}/posts/3
 Content-Type: application/json
 
 {
@@ -69,10 +70,10 @@ Content-Type: application/json
 }
 
 ### Delete post
-DELETE {{host}}:{{port}}/posts/3
+DELETE {{host}}:{{port}}{{base}}/posts/3
 
 ### Create like
-POST {{host}}:{{port}}/likes
+POST {{host}}:{{port}}{{base}}/likes
 Content-Type: application/json
 
 {
@@ -80,7 +81,7 @@ Content-Type: application/json
 }
 
 ### Delete like
-DELETE {{host}}:{{port}}/likes
+DELETE {{host}}:{{port}}{{base}}/likes
 Content-Type: application/json
 
 {
