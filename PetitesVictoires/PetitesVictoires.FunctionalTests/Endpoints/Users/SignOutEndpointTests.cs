@@ -14,7 +14,7 @@ public class SignOutEndpointTests : FunctionalTestBase
     [Test]
     public async Task SignOut_WhenAnonymous_Returns401()
     {
-        var response = await CreateClient().GetAsync(SignOutRoute);
+        var response = await CreateClient().PostAsync(SignOutRoute, null);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -27,7 +27,7 @@ public class SignOutEndpointTests : FunctionalTestBase
         await client.PostAsJsonAsync(SignInRequest.Route,
             new { emailAddress = "alice@mail.com", password = "Password123!" });
 
-        var response = await client.GetAsync(SignOutRoute);
+        var response = await client.PostAsync(SignOutRoute, null);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
@@ -39,7 +39,7 @@ public class SignOutEndpointTests : FunctionalTestBase
         var client = CreateClient();
         await client.PostAsJsonAsync(SignInRequest.Route,
             new { emailAddress = "alice@mail.com", password = "Password123!" });
-        await client.GetAsync(SignOutRoute);
+        await client.PostAsync(SignOutRoute, null);
 
         var response = await client.PostAsJsonAsync(CreatePostRequest.Route, new { content = "should fail" });
 

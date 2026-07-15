@@ -16,6 +16,7 @@ public static class IdentityConfigurations
                 options => // optional configuration overload
                 {
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
                     options.SlidingExpiration = true;
                     options.Events.OnRedirectToLogin = ctx =>
                     {

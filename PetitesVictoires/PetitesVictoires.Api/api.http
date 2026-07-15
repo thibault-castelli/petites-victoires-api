@@ -44,7 +44,7 @@ Content-Type: application/json
 }
 
 ### Sign out
-GET {{host}}:{{port}}/users/sign-out
+POST {{host}}:{{port}}/users/sign-out
 
 ### GET post
 GET {{host}}:{{port}}/posts/2

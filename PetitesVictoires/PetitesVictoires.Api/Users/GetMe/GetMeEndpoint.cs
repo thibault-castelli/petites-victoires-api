@@ -10,7 +10,7 @@ namespace PetitesVictoires.Api.Users.GetMe;
 public class GetMeEndpoint(IMediator mediator)
     : EndpointWithoutRequest<Results<Ok<UserRecord>, NotFound, ProblemHttpResult>, GetMeMapper>
 {
-    public const string Route = "users/me";
+    public const string Route = "Users/Me";
 
     public override void Configure()
     {
