@@ -17,13 +17,13 @@ public static class FastEndpointsConfiguration
                 {
                     o.SerializerSettings = s => s.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     o.ShortSchemaNames = true;
+                    o.RemoveEmptyRequestSchema = true;
                     o.DocumentSettings = s =>
                     {
                         s.Title = "Petites Victoires API";
                         s.Version = "v1";
                         s.Description = "Http endpoints for the Petites Victoires API";
                     };
-                    o.ShortSchemaNames = true;
                 });
 
             return services;
