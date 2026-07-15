@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Respawn" Version="7.0.0"/>
+        <PackageReference Include="Testcontainers.PostgreSql" Version="4.13.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\PetitesVictoires.Infrastructure\PetitesVictoires.Infrastructure.csproj"/>
+    </ItemGroup>
+
+</Project>

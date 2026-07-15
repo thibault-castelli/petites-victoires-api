@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using PetitesVictoires.Infrastructure.Data;
+using PetitesVictoires.TestSupport;
 
 namespace PetitesVictoires.IntegrationTests;
 
@@ -17,21 +17,14 @@ public abstract class IntegrationTestBase
     [TearDown]
     public async Task BaseTearDown() => await DbContext.DisposeAsync();
 
-    // Raw SQL inserts mirror the seeders: they set explicit ids into the Vogen-backed identity
-    // columns and let us pin CreatedAt for deterministic ordering assertions.
     protected Task SeedUserAsync(int id, string email, string name, DateTime? createdAt = null) =>
-        DbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"INSERT INTO \"Users\" (\"Id\", \"EmailAddress\", \"Name\", \"CreatedAt\") VALUES ({id}, {email}, {name}, {createdAt ?? DateTime.UtcNow})");
+        DbContext.SeedUserAsync(id, email, name, createdAt);
 
     protected Task SeedPostAsync(int id, string content, int userId, DateTime? createdAt = null) =>
-        DbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"INSERT INTO \"Posts\" (\"Id\", \"Content\", \"UserId\", \"CreatedAt\") VALUES ({id}, {content}, {userId}, {createdAt ?? DateTime.UtcNow})");
+        DbContext.SeedPostAsync(id, content, userId, createdAt);
 
     protected Task SeedLikeAsync(int id, int userId, int postId, DateTime? createdAt = null) =>
-        DbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"INSERT INTO \"Likes\" (\"Id\", \"UserId\", \"PostId\", \"CreatedAt\") VALUES ({id}, {userId}, {postId}, {createdAt ?? DateTime.UtcNow})");
+        DbContext.SeedLikeAsync(id, userId, postId, createdAt);
 
-    protected Task SoftDeletePostAsync(int id) =>
-        DbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"UPDATE \"Posts\" SET \"DeletedAt\" = {DateTime.UtcNow} WHERE \"Id\" = {id}");
+    protected Task SoftDeletePostAsync(int id) => DbContext.SoftDeletePostAsync(id);
 }
