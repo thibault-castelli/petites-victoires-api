@@ -47,7 +47,11 @@ public static class MiddlewareConfigurations
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseAntiforgeryFE();
-            app.UseFastEndpoints(c => c.Endpoints.RoutePrefix = "api");
+            app.UseFastEndpoints(c =>
+            {
+                c.Endpoints.RoutePrefix = "api";
+                c.Errors.UseProblemDetails();
+            });
 
             var shouldMigrate = app.Environment.IsDevelopment();
             if (!shouldMigrate) return app;
