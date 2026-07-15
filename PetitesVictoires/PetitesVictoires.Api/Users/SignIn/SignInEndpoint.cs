@@ -30,7 +30,7 @@ public class SignInEndpoint(IMediator mediator)
         Description(b => b
             .WithName("SignIn")
             .Accepts<SignInRequest>("application/json")
-            .Produces<NoContent>()
+            .Produces(204)
             .ProducesProblem(400)
             .ProducesProblem(401)
             .ProducesProblem(500)
