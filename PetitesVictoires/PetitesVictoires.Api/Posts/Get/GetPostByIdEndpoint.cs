@@ -32,6 +32,7 @@ public class GetPostByIdEndpoint(IMediator mediator)
         });
         Tags("Posts");
         Description(b => b
+            .WithName("GetPostById")
             .Accepts<GetPostByIdRequest>()
             .Produces<PostRecord>(200, "application/json")
             .ProducesProblem(404)

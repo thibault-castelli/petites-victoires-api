@@ -28,6 +28,7 @@ public class CreateLikeEndpoint(IMediator mediator)
         });
         Tags("Likes");
         Description(b => b
+            .WithName("CreateLike")
             .Accepts<CreateLikeRequest>("application/json")
             .Produces<LikeRecord>(201, "application/json")
             .ProducesProblem(400)

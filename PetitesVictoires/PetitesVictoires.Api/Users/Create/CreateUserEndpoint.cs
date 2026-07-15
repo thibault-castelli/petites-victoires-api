@@ -26,7 +26,8 @@ public class CreateUserEndpoint(IMediator mediator)
             s.Responses[500] = "Internal server error";
         });
         Tags("Users");
-        Description(builder => builder
+        Description(b => b
+            .WithName("CreateUser")
             .Accepts<CreateUserRequest>("application/json")
             .Produces<UserRecord>(201, "application/json")
             .ProducesProblem(400)

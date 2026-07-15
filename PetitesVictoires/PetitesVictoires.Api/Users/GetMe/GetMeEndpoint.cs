@@ -25,6 +25,7 @@ public class GetMeEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
+            .WithName("GetMe")
             .Produces<UserRecord>(200, "application/json")
             .ProducesProblem(401)
             .ProducesProblem(404)

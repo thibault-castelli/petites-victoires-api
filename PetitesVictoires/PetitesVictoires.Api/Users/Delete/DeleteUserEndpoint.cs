@@ -28,6 +28,7 @@ public class DeleteUserEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
+            .WithName("DeleteUser")
             .Accepts<DeleteUserRequest>()
             .Produces(204)
             .ProducesProblem(400)

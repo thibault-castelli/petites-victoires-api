@@ -26,6 +26,7 @@ public class CreatePostEndpoint(IMediator mediator)
         });
         Tags("Posts");
         Description(b => b
+            .WithName("CreatePost")
             .Accepts<CreatePostRequest>("application/json")
             .Produces<PostId>(201, "application/json")
             .ProducesProblem(400)

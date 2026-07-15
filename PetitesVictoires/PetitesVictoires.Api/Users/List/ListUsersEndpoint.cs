@@ -32,6 +32,7 @@ public class ListUsersEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
+            .WithName("ListUsers")
             .Accepts<ListUsersRequest>()
             .Produces<ListUsersResponse>(200, "application/json")
             .ProducesProblem(400)

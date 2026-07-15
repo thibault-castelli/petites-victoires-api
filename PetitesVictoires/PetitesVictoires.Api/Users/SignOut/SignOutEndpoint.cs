@@ -18,6 +18,7 @@ public class SignOutEndpoint : EndpointWithoutRequest<Results<NoContent, Problem
         });
         Tags("Users");
         Description(b => b
+            .WithName("SignOut")
             .Produces<NoContent>()
             .ProducesProblem(401)
             .ProducesProblem(500)

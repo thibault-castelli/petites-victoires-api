@@ -27,6 +27,7 @@ public class DeletePostEndpoint(IMediator mediator)
         });
         Tags("Posts");
         Description(b => b
+            .WithName("DeletePost")
             .Accepts<DeletePostRequest>()
             .Produces(204)
             .ProducesProblem(400)

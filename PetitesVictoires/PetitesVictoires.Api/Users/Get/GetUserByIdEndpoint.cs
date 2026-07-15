@@ -25,6 +25,7 @@ public class GetUserByIdEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
+            .WithName("GetUserById")
             .Accepts<GetUserByIdRequest>()
             .Produces<UserRecord>(200, "application/json")
             .ProducesProblem(404)

@@ -28,6 +28,7 @@ public class SignInEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
+            .WithName("SignIn")
             .Accepts<SignInRequest>("application/json")
             .Produces<NoContent>()
             .ProducesProblem(400)

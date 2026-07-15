@@ -25,6 +25,7 @@ public class GetUserLikeStatsEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
+            .WithName("GetUserLikeStats")
             .Accepts<GetUserLikeStatsRequest>()
             .Produces<UserRecord>(200, "application/json")
             .ProducesProblem(401)

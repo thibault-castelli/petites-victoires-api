@@ -31,6 +31,7 @@ public class UpdatePostEndpoint(IMediator mediator)
         });
         Tags("Posts");
         Description(b => b
+            .WithName("UpdatePost")
             .Accepts<UpdatePostRequest>("application/json")
             .Produces<PostRecord>(200, "application/json")
             .ProducesProblem(400)

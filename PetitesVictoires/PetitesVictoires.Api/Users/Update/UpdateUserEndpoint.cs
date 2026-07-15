@@ -31,6 +31,7 @@ public class UpdateUserEndpoint(IMediator mediator)
         });
         Tags("Users");
         Description(b => b
+            .WithName("UpdateUser")
             .Accepts<UpdateUserRequest>("application/json")
             .Produces<UserRecord>(200, "application/json")
             .ProducesProblem(400)

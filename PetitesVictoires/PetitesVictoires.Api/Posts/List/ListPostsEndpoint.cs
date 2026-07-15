@@ -35,6 +35,7 @@ public class ListPostsEndpoint(IMediator mediator)
         });
         Tags("Posts");
         Description(b => b
+            .WithName("ListPosts")
             .Accepts<ListPostsRequest>()
             .Produces<ListPostsResponse>(200, "application/json")
             .ProducesProblem(400)
