@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 
@@ -14,6 +15,8 @@ public static class FastEndpointsConfiguration
             services.AddFastEndpoints()
                 .SwaggerDocument(o =>
                 {
+                    o.SerializerSettings = s => s.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    o.ShortSchemaNames = true;
                     o.DocumentSettings = s =>
                     {
                         s.Title = "Petites Victoires API";
