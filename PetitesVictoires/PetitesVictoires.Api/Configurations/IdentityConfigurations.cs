@@ -30,7 +30,6 @@ public static class IdentityConfigurations
                     };
                 });
             services.AddAuthorization();
-            services.AddAntiforgery();
 
             services.Configure<IdentityOptions>(options =>
             {

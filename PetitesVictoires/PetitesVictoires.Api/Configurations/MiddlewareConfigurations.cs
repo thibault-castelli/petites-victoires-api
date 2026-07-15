@@ -46,7 +46,6 @@ public static class MiddlewareConfigurations
             app.UseHttpsRedirection(); // Note this will drop Authorization headers
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseAntiforgeryFE();
             app.UseFastEndpoints(c =>
             {
                 c.Endpoints.RoutePrefix = "api";
